@@ -54,7 +54,7 @@ use constant DeleteTags => { map {$_ => 1} qw(
     head style applet script
 ) };
 use constant IgnoreTags => { map {$_ => 1} qw(
-    title center a ul
+    title a ul
 
     del address blockquote colgroup fieldset
     input form frameset object noframes noscript
@@ -83,6 +83,13 @@ use constant TwigArguments => (
                 $_->set_att( w => '100%' );
             };
         })->($_)), 1..6),
+        center => sub {
+            foreach my $child ($_->children('p')) {
+                # XXX - revert other blocklevel to left/original alignment
+                $child->set_att( align => 'center' );
+            }
+            $_->erase;
+        },
         sup => sub {
             my $digits = $_->text;
             my $text = '';
@@ -110,14 +117,16 @@ use constant TwigArguments => (
             $_->erase;
         },
         div => sub {
-            # XXX - deal with class="header" and class="footer"
-            $_->erase;
+            if (my $tag = (_type(header => $_) || _type(footer => $_))) {
+                $_->set_tag($tag);
+
+                my $height;
+                $height += $_->att('h') foreach $_->descendants;
+                $_->set_att( "${tag}_height" => int($height + 24));
+            }
         },
         hr => sub {
-            $_->insert_new_elt(
-                first_child => 
-                    ($_->att('class') eq 'pagebreak') ? 'pagebreak' : 'hr'
-            );
+            $_->insert_new_elt( first_child => (_type(pagebreak => $_) || 'hr') );
             $_->erase;
         },
         img => sub {
@@ -126,12 +135,13 @@ use constant TwigArguments => (
                 filename => $file,
                 w => ($_->att('width') / PageWidth * 540),
                 h => ($_->att('height') / PageWidth * 540),
-                type => '', # XXX
+                type => '',
             } );
             $image->wrap_in('row');
             $_->erase;
         },
         body => sub {
+            # XXX make pagedef into parameters
             $_->wrap_in(
                 pagedef => {
                     pagesize => "A4",
@@ -146,7 +156,8 @@ use constant TwigArguments => (
                 }
             );
             my $pagedef = $_->parent->parent;
-            my $head = $pagedef->insert_new_elt(first_child => header => { header_height => 24 } );
+            my $head = ($pagedef->descendants('header'))[0]
+                    || $pagedef->insert_new_elt(first_child => header => { header_height => 24 } );
             my $row = $head->insert_new_elt(first_child => 'row');
             $row->insert_new_elt(first_child => textbox => { w => '100%', text => '' });
             foreach my $child ($_->children('#PCDATA')) {
@@ -221,7 +232,6 @@ use constant TwigArguments => (
             $_->set_att(lmargin => '3');
             $_->set_att(rmargin => '3');
 
-            # XXX - breaks sup
             if (my $font = _get(font => $_)) {
                 $_->wrap_in( font => { face => $font } );
             }
@@ -302,7 +312,10 @@ sub _p {
 
     if (@children) {
         my $textbox = $_->insert_new_elt(
-            before => 'textbox', { w => (($_->tag eq 'p') ? '100%' : '97%') }
+            before => 'textbox', {
+                w => (($_->tag eq 'p') ? '100%' : '97%'),
+                align => $_->att('align')
+            },
         );
         $textbox->wrap_in('row');
         if ($_->tag eq 'li') {
@@ -335,9 +348,13 @@ sub _p {
         my %attr;
         $attr{face} = $font if $font;
         if (_get(underline => $_)) {
+            my $align = $textbox->att('align');
+            $align .= '_underline';
+            $textbox->del_att('align');
+
             require PDF::Template::Constants;
-            $PDF::Template::Constants::Verify{ALIGN}{underline} = 1;
-            $attr{align} = 'underline' 
+            $PDF::Template::Constants::Verify{ALIGN}{$align} = 1;
+            $attr{align} = $align;
         }
 
         $textbox->wrap_in('font' => \%attr) if %attr;
@@ -350,6 +367,12 @@ sub _p {
 sub _percentify {
     my $num = _perc($_[0]);
     return $num;
+}
+
+sub _type {
+    my ($val, $elt) = @_;
+    return $val if ($elt->att('type') eq $val) or ($elt->att('class') eq $val);
+    return undef;
 }
 
 sub _perc {
