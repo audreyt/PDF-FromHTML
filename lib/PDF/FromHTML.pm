@@ -1,5 +1,5 @@
 package PDF::FromHTML;
-$PDF::FromHTML::VERSION = '0.00_04';
+$PDF::FromHTML::VERSION = '0.01';
 
 use strict;
 use Cwd;
@@ -18,8 +18,8 @@ PDF::FromHTML - Convert HTML documents to PDF
 
 =head1 VERSION
 
-This document describes version 0.00_04 of PDF::FromHTML,
-released July 17, 2004.
+This document describes version 0.01 of PDF::FromHTML, released 
+July 17, 2004.
 
 =head1 SYNOPSIS
 
@@ -36,8 +36,7 @@ transformations implemented in L<PDF::FromHTML::Twig>.
 There is also a command-line utility, L<html2pdf.pl>, that comes
 with this distribution.
 
-More documentation is expected soon; this is merely a pre-alpha,
-proof-of-concept release.
+More documentation is expected soon.
 
 =cut
 
@@ -52,6 +51,9 @@ sub args { $_[0]{args} }
 
 sub load_file {
     my ($self, $file) = @_;
+
+    local $SIG{__WARN__} = sub { 1 };
+
     my $dir = Cwd::getcwd();
     if (!ref $file) {
         open my $fh, $file or die $!;
@@ -65,33 +67,40 @@ sub load_file {
 
     # lower-case all tags
     my $lc_tags = Hook::LexWrap::wrap(
-        XML::Clean::handle_start,
-        pre => sub { $_[0] = lc($_[0]) },
+        *XML::Clean::handle_start,
+        pre => sub {
+            $_[0] = lc($_[0]);
+            $_[0] = 'i' if $_[0] eq 'em';
+            $_[0] = 'b' if $_[0] eq 'strong';
+        },
     );
 
-    $self->twig->parse( XML::Clean::clean($$file, '1.0', $self->args) );
+    my $cleaned = XML::Clean::clean($$file, '1.0', $self->args);
+    $self->twig->parse($cleaned);
     chdir $dir;
 }
 
 sub convert {
     my $self = shift;
-    my $xml = $self->twig->sprint;
+
+    local $SIG{__WARN__} = sub { 1 };
 
     my ($fh, $filename) = File::Temp::tempfile( SUFFIX => '.xml');
     binmode($fh);
-    print $fh $xml;
+    print $fh $self->twig->sprint;
     close $fh;
 
     my $pdf = eval { PDF::Template->new( filename => $filename ) }
       or die "$filename: $@";
 
-    local $SIG{__WARN__} = sub {};
     $pdf->param(@_);
     $self->{pdf} = $pdf;
 }
 
 sub write_file {
     my $self = shift;
+
+    local $SIG{__WARN__} = sub { 1 };
     $self->{pdf}->write_file(@_);
 }
 

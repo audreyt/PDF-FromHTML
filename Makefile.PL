@@ -9,8 +9,9 @@ license		('perl');
 version_from	('lib/PDF/FromHTML.pm');
 install_script  ('script/html2pdf.pl');
 
-eval { require PDF::Writer; require PDF::API2; PDF::API2->VERSION ge '0.40_52' }
-    or die << '.';
+eval { require PDF::API2; PDF::API2->VERSION ge '0.40_52' } and
+eval { require PDF::Template; $INC{'PDF/Writer.pm'} } or
+    die << '.';
 
 This module requires two 'developer release' modules on CPAN:
 
@@ -27,8 +28,9 @@ requires(
     'XML::Clean'    => undef,
     'Hook::LexWrap' => undef,
     'Color::Rgb'    => undef,
-    'PDF::Writer'   => '0.02',
+    'PDF::Writer'   => '0.03',
     'PDF::API2'     => '0.40_52',
+    'PDF::Template' => '0.18',
 );
 
 WriteAll( sign => 1 );

@@ -27,6 +27,7 @@ sub new {
     return $class->SUPER::new( $class->TwigArguments, @_ );
 }
 
+use constant PageWidth => 640;
 use constant FontBold => 'HelveticaBold';
 use constant FontOblique => 'HelveticaOblique';
 use constant FontBoldOblique => 'HelveticaBoldOblique';
@@ -48,14 +49,21 @@ use constant SubScript => [
     "\N{SUBSCRIPT SIX}", "\N{SUBSCRIPT SEVEN}", "\N{SUBSCRIPT EIGHT}",
     "\N{SUBSCRIPT NINE}",
 ];
-use constant InlineTags => { map {$_ => 1} qw(
-    #PCDATA font
-) };
+use constant InlineTags => { map {$_ => 1} '#PCDATA', 'font' };
 use constant DeleteTags => { map {$_ => 1} qw(
-    head style
+    head style applet script
 ) };
 use constant IgnoreTags => { map {$_ => 1} qw(
     title center a ul
+
+    del address blockquote colgroup fieldset
+    input form frameset object noframes noscript
+    small optgroup isindex area textarea col
+    pre frame param menu acronym abbr bdo
+    label basefont big caption option cite
+    dd dfn dt base code map iframe ins kbd legend
+    samp span dir strike meta link tbody q tfoot
+    button thead var tt select s 
 ) };
 use constant TwigArguments => (
     twig_handlers => {
@@ -101,16 +109,23 @@ use constant TwigArguments => (
             _set(font => +FontBold, $_);
             $_->erase;
         },
+        div => sub {
+            # XXX - deal with class="header" and class="footer"
+            $_->erase;
+        },
         hr => sub {
-            $_->insert_new_elt(first_child => 'hr');
+            $_->insert_new_elt(
+                first_child => 
+                    ($_->att('class') eq 'pagebreak') ? 'pagebreak' : 'hr'
+            );
             $_->erase;
         },
         img => sub {
             my $file = File::Spec->rel2abs($_->att('src'));
             my $image = $_->insert_new_elt(first_child => image => {
                 filename => $file,
-                w => $_->att('width'),
-                h => $_->att('height'),
+                w => ($_->att('width') / PageWidth * 540),
+                h => ($_->att('height') / PageWidth * 540),
                 type => '', # XXX
             } );
             $image->wrap_in('row');
@@ -144,11 +159,6 @@ use constant TwigArguments => (
                 $child->insert_new_elt( after => 'textbox' )->wrap_in('row');
             }
 
-            # XXX - voodoo cleanup
-            foreach my $child ($_->descendants('textbox')) {
-                $child->delete if $child->text eq '1' and $child->att('w') eq '100%';
-            }
-
             $_->erase;
         },
         p => \&_p,
@@ -168,10 +178,21 @@ use constant TwigArguments => (
             $_->insert_new_elt(last_child => row => { h => '12' });
             $_->erase;
         },
+        br => sub {
+            $_->insert_new_elt(last_child => row => { h => '12' });
+            $_->erase;
+        },
         ul => sub {
             foreach my $child ($_->descendants('counter')) {
                 $child->set_tag('textbox');
                 $child->set_text("* ");
+            }
+            $_->insert_new_elt(last_child => row => { h => '12' });
+            $_->erase;
+        },
+        dl => sub {
+            foreach my $child ($_->descendants('counter')) {
+                $child->delete;
             }
             $_->insert_new_elt(last_child => row => { h => '12' });
             $_->erase;
@@ -291,7 +312,9 @@ sub _p {
         }
         foreach my $child (@children) {
             $child->paste( last_child => $textbox );
-            $child->set_text(join(' ', grep length, split(/\n+/, $child->text)));
+            $child->set_text(
+                join(' ', grep {length and $_ ne 1} split(/\n+/, $child->text))
+            );
         }
 
         my $font = _get(font => $_);
@@ -332,7 +355,7 @@ sub _percentify {
 sub _perc {
     my $num = shift;
     return $1 if $num =~ /(\d+)%/;
-    return int($num / 560 * 100);
+    return int($num / PageWidth * 100);
 }
 
 1;

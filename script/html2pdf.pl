@@ -1,9 +1,10 @@
 #!/usr/local/bin/perl
 
-use FindBin;
+#use FindBin;
+#use lib '/usr/home/autrijus/private/PDF-Template/lib';
+#use lib "$FindBin::Bin/../lib";
+
 use PDF::FromHTML;
-use lib '/usr/home/autrijus/private/PDF-Template/lib';
-use lib "$FindBin::Bin/../lib";
 
 =head1 NAME
 
@@ -17,11 +18,13 @@ html2pdf.pl - Turn HTML to PDF
 
 my $pdf = PDF::FromHTML->new( encoding => 'utf-8' );
 
+local $SIG{__DIE__} = sub { require Carp; Carp::confess(@_) };
+
 $pdf->load_file(shift || '-');
 $pdf->convert;
-open X, '>/tmp/x';
-print X $pdf->twig->sprint;
-close X;
+#open X, '>/tmp/x';
+#print X $pdf->twig->sprint;
+#close X;
 $pdf->write_file(shift || '-');
 
 1;
