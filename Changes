@@ -1,38 +1,5 @@
-----------------------------------------------------------------------
-r6165:  autrijus | 2004-07-17T19:57:04.494550Z
+XXX - Temporarily out of order - XXX
 
-* This be 0.00_04.
-* Support for <u>, <sup> and <sub> completed.
-* We now require PDF::Writer 0.02 (part of PDF-Template-PDFAPI2)
-  for underline and sup/sub munging.
-----------------------------------------------------------------------
-r6164:  autrijus | 2004-07-17T19:43:52.411358Z
+0.04: Adds parameters to ->convert() so page size, font height
+      Jetc can be tweaked.
 
-* Underline now works, for some obscure definition of work.
-----------------------------------------------------------------------
-r6157:  autrijus | 2004-07-17T01:52:24.280506Z
-
-* This be 0.00_03.
-* <ol>, <ul>, <i> and <sup>.
-----------------------------------------------------------------------
-r6152:  autrijus | 2004-07-16T17:30:03.511354Z
-
-* fix td aligning.
-----------------------------------------------------------------------
-r6151:  autrijus | 2004-07-16T16:19:48.000177Z
-
-* 0.00_02.
-* Correctly renders nested tables.
-----------------------------------------------------------------------
-r6144:  autrijus | 2004-07-16T03:33:14.557170Z
-
-* changes, manifest, etc.
-----------------------------------------------------------------------
-r6143:  autrijus | 2004-07-16T03:29:31.626167Z
-
-* This be 0.00_01, first CPAN (pre)release.
-----------------------------------------------------------------------
-r6126:  autrijus | 2004-07-15T19:10:58.897522Z
-
-* first checking of PDF::FromHTML.
-----------------------------------------------------------------------

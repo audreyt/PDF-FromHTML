@@ -1,12 +1,14 @@
 package PDF::FromHTML::Twig;
 
 use strict;
-use charnames ':full';
-use XML::Twig;
+use warnings;
 use base 'XML::Twig';
+
+use charnames ':full';
 use Color::Rgb;
 use File::Spec;
 use File::Basename;
+use List::Util qw( sum first reduce );
 
 =head1 NAME
 
@@ -27,26 +29,26 @@ sub new {
     return $class->SUPER::new( $class->TwigArguments, @_ );
 }
 
-use constant PageWidth => 640;
-use constant FontBold => 'HelveticaBold';
-use constant FontOblique => 'HelveticaOblique';
-use constant FontBoldOblique => 'HelveticaBoldOblique';
-use constant FontUnicode => 'Helvetica';
-#use constant FontUnicode => do {
-#    my $font = '/usr/X11R6/lib/X11/fonts/webfonts/arialuni.ttf' if 0;
-#    (-e $font) ? $font : 'Helvetica';
-#};
-use constant Font => +FontUnicode;
+our $PageWidth = 640;
+our $PageResolution = 540;
+our $FontBold = 'HelveticaBold';
+our $FontOblique = 'HelveticaOblique';
+our $FontBoldOblique = 'HelveticaBoldOblique';
+our $LineHeight = 12;
+our $FontUnicode = 'Helvetica';
+our $Font = $FontUnicode;
+our $PageSize = 'A4';
+our $Landscape = 0;
 use constant SuperScript => [
-    "\N{SUPERSCRIPT ZERO}", "\N{SUPERSCRIPT ONE}", "\N{SUPERSCRIPT TWO}",
-    "\N{SUPERSCRIPT THREE}", "\N{SUPERSCRIPT FOUR}", "\N{SUPERSCRIPT FIVE}",
-    "\N{SUPERSCRIPT SIX}", "\N{SUPERSCRIPT SEVEN}", "\N{SUPERSCRIPT EIGHT}",
+    "\N{SUPERSCRIPT ZERO}",  "\N{SUPERSCRIPT ONE}",   "\N{SUPERSCRIPT TWO}",
+    "\N{SUPERSCRIPT THREE}", "\N{SUPERSCRIPT FOUR}",  "\N{SUPERSCRIPT FIVE}",
+    "\N{SUPERSCRIPT SIX}",   "\N{SUPERSCRIPT SEVEN}", "\N{SUPERSCRIPT EIGHT}",
     "\N{SUPERSCRIPT NINE}",
 ];
 use constant SubScript => [
-    "\N{SUBSCRIPT ZERO}", "\N{SUBSCRIPT ONE}", "\N{SUBSCRIPT TWO}",
-    "\N{SUBSCRIPT THREE}", "\N{SUBSCRIPT FOUR}", "\N{SUBSCRIPT FIVE}",
-    "\N{SUBSCRIPT SIX}", "\N{SUBSCRIPT SEVEN}", "\N{SUBSCRIPT EIGHT}",
+    "\N{SUBSCRIPT ZERO}",    "\N{SUBSCRIPT ONE}",     "\N{SUBSCRIPT TWO}",
+    "\N{SUBSCRIPT THREE}",   "\N{SUBSCRIPT FOUR}",    "\N{SUBSCRIPT FIVE}",
+    "\N{SUBSCRIPT SIX}",     "\N{SUBSCRIPT SEVEN}",   "\N{SUBSCRIPT EIGHT}",
     "\N{SUBSCRIPT NINE}",
 ];
 use constant InlineTags => { map {$_ => 1} '#PCDATA', 'font' };
@@ -75,10 +77,10 @@ use constant TwigArguments => (
             my $size = shift;
             sub {
                 $_->insert_new_elt( before => 'textbox' )
-                   ->wrap_in('row')
-                   ->wrap_in( font => { face => +FontBold } );
-                $_->wrap_in(font => { h => 18 - $size });
-                $_->wrap_in(row => { h => 20 - $size });
+                  ->wrap_in('row')
+                  ->wrap_in( font => { face => $FontBold } );
+                $_->wrap_in(font => { h => $LineHeight + 6 - $size });
+                $_->wrap_in(row => { h => $LineHeight + 8 - $size });
                 $_->set_tag('textbox'),
                 $_->set_att( w => '100%' );
             };
@@ -109,20 +111,22 @@ use constant TwigArguments => (
             $_->erase;
         },
         i => sub {
-            _set(font => +FontOblique, $_);
+            _set(font => $FontOblique, $_);
             $_->erase;
         },
         b => sub {
-            _set(font => +FontBold, $_);
+            _set(font => $FontBold, $_);
             $_->erase;
         },
         div => sub {
             if (my $tag = (_type(header => $_) || _type(footer => $_))) {
                 $_->set_tag($tag);
-
-                my $height;
-                $height += $_->att('h') foreach $_->descendants;
-                $_->set_att( "${tag}_height" => int($height + 24));
+                $_->set_att(
+                    "${tag}_height" => int(sum(
+                        $LineHeight * 2,
+                        grep defined, map $_->att('h'), $_->descendants
+                    )),
+                );
             }
         },
         hr => sub {
@@ -133,8 +137,8 @@ use constant TwigArguments => (
             my $file = File::Spec->rel2abs($_->att('src'));
             my $image = $_->insert_new_elt(first_child => image => {
                 filename => $file,
-                w => ($_->att('width') / PageWidth * 540),
-                h => ($_->att('height') / PageWidth * 540),
+                w => ($_->att('width') / $PageWidth * $PageResolution),
+                h => ($_->att('height') / $PageWidth * $PageResolution),
                 type => '',
             } );
             $image->wrap_in('row');
@@ -142,28 +146,39 @@ use constant TwigArguments => (
         },
         body => sub {
             # XXX make pagedef into parameters
+            if ($Landscape) {
+                require PDF::Template;
+                $PageSize = 'A4LANDSCAPE';
+                $PDF::Template::Constants::Verify{PAGESIZE}{__DEFAULT__} = 'A4LANDSCAPE';
+                $PDF::Template::Constants::Verify{PAGESIZE}{A4LANDSCAPE} = {
+                    PAGE_WIDTH => 842,
+                    PAGE_HEIGHT => 595,
+                };
+            }
+
             $_->wrap_in(
                 pagedef => {
-                    pagesize => "A4",
-                    landscape => "0",
-                    margins => "10"
+                    pagesize => $PageSize,
+                    landscape => $Landscape,
+                    margins => $LineHeight - 2,
                 },
             );
             $_->wrap_in(
                 font => {
-                    face => +Font,
-                    h => 10,
+                    face => $Font,
+                    h => $LineHeight - 2,
                 }
             );
             my $pagedef = $_->parent->parent;
-            my $head = ($pagedef->descendants('header'))[0]
-                    || $pagedef->insert_new_elt(first_child => header => { header_height => 24 } );
+            my $head = ($pagedef->descendants('header'))[0] || $pagedef->insert_new_elt(
+                first_child => header => { header_height => $LineHeight * 2 }
+            );
             my $row = $head->insert_new_elt(first_child => 'row');
             $row->insert_new_elt(first_child => textbox => { w => '100%', text => '' });
             foreach my $child ($_->children('#PCDATA')) {
                 $child->set_text(join(' ', grep length, split(/\n+/, $child->text)));
                 if ($child->text =~ /[^\x00-\x7f]/) {
-                    $child->wrap_in(font => { face => +FontUnicode });
+                    $child->wrap_in(font => { face => $FontUnicode });
                 }
                 $child->wrap_in('row');
                 $child->wrap_in(textbox => { w => '100%' });
@@ -176,7 +191,7 @@ use constant TwigArguments => (
         li => \&_p,
         table => sub {
             $_->root->del_att('#widths');
-            $_->insert_new_elt(last_child => row => { h => '12' });
+            $_->insert_new_elt(last_child => row => { h => $LineHeight });
             $_->erase;
         },
         ol => sub {
@@ -186,11 +201,11 @@ use constant TwigArguments => (
                 $child->set_text("$count. ");
                 $count++;
             }
-            $_->insert_new_elt(last_child => row => { h => '12' });
+            $_->insert_new_elt(last_child => row => { h => $LineHeight });
             $_->erase;
         },
         br => sub {
-            $_->insert_new_elt(last_child => row => { h => '12' });
+            $_->insert_new_elt(last_child => row => { h => $LineHeight });
             $_->erase;
         },
         ul => sub {
@@ -198,14 +213,14 @@ use constant TwigArguments => (
                 $child->set_tag('textbox');
                 $child->set_text("* ");
             }
-            $_->insert_new_elt(last_child => row => { h => '12' });
+            $_->insert_new_elt(last_child => row => { h => $LineHeight });
             $_->erase;
         },
         dl => sub {
             foreach my $child ($_->descendants('counter')) {
                 $child->delete;
             }
-            $_->insert_new_elt(last_child => row => { h => '12' });
+            $_->insert_new_elt(last_child => row => { h => $LineHeight });
             $_->erase;
         },
         tr => sub {
@@ -223,14 +238,14 @@ use constant TwigArguments => (
                 $child->set_att( w => $width );
             }
             $_->set_tag('row');
+            $_->set_att(lmargin => '3');
+            $_->set_att(rmargin => '3');
+            $_->set_att(border => $_->parent('table')->att('border'));
         },
         td => sub {
             return $_->erase if $_->descendants('row');
 
             $_->set_tag('textbox');
-            $_->set_att(border => $_->parent('table')->att('border'));
-            $_->set_att(lmargin => '3');
-            $_->set_att(rmargin => '3');
 
             if (my $font = _get(font => $_)) {
                 $_->wrap_in( font => { face => $font } );
@@ -238,15 +253,13 @@ use constant TwigArguments => (
         },
         th => sub {
             $_->set_tag('textbox');
-            $_->set_att(border => $_->parent('table')->att('border'));
-            $_->set_att(lmargin => '3');
-            $_->set_att(rmargin => '3');
             $_->set_text(join('', split(/\s+/, $_->text)));
         },
         font => sub {
             $_->del_att('face');
+
             if ($_->att_names) {
-                $_->set_att(face => +Font);
+                $_->set_att(face => $Font);
                 $_->erase; # XXX
             }
             else {
@@ -269,7 +282,7 @@ use constant TwigArguments => (
                 $_->root->set_att('#widths' => $widths);
             }
             if (my $h = $_->att('size')) {
-                $_->set_att(h => 10 + (2 * ($h - 3)));
+                $_->set_att(h => $LineHeight + (2 * ($h - 4)));
             }
             if (my $bgcolor = $_->att('bgcolor')) {
                 $_->set_att(
@@ -312,7 +325,7 @@ sub _p {
 
     if (@children) {
         my $textbox = $_->insert_new_elt(
-            before => 'textbox', {
+            before => textbox => {
                 w => (($_->tag eq 'p') ? '100%' : '97%'),
                 align => $_->att('align')
             },
@@ -320,7 +333,7 @@ sub _p {
         $textbox->wrap_in('row');
         if ($_->tag eq 'li') {
             $textbox->insert_new_elt(
-                before => 'counter', { w => '3%', align => 'right' }
+                before => counter => { w => '3%', align => 'right' }
             );
         }
         foreach my $child (@children) {
@@ -333,16 +346,16 @@ sub _p {
         my $font = _get(font => $_);
 
         if ($textbox->text =~ /[^\x00-\x7f]/) {
-            $font = +FontUnicode;
+            $font = $FontUnicode;
         }
         elsif ($_->parent('i') and $_->parent('b')) {
-            $font ||= +FontBoldOblique;
+            $font ||= $FontBoldOblique;
         }
         elsif ($_->parent('i')) {
-            $font ||= +FontOblique;
+            $font ||= $FontOblique;
         }
         elsif ($_->parent('b')) {
-            $font ||= +FontBold;
+            $font ||= $FontBold;
         }
 
         my %attr;
@@ -353,7 +366,8 @@ sub _p {
             $textbox->del_att('align');
 
             require PDF::Template::Constants;
-            $PDF::Template::Constants::Verify{ALIGN}{$align} = 1;
+            $PDF::Template::Constants::Verify{ALIGN}{$align} = 1
+              if %PDF::Template::Constants::Verify;
             $attr{align} = $align;
         }
 
@@ -365,20 +379,14 @@ sub _p {
 }
 
 sub _percentify {
-    my $num = _perc($_[0]);
-    return $num;
+    my $num = shift;
+    return $1 if $num =~ /(\d+)%/;
+    return int($num / $PageWidth * 100);
 }
 
 sub _type {
     my ($val, $elt) = @_;
-    return $val if ($elt->att('type') eq $val) or ($elt->att('class') eq $val);
-    return undef;
-}
-
-sub _perc {
-    my $num = shift;
-    return $1 if $num =~ /(\d+)%/;
-    return int($num / PageWidth * 100);
+    return first { $_ eq $val } grep defined, map $elt->att($_), qw(type class);
 }
 
 1;

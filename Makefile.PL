@@ -24,6 +24,9 @@ may not be able to find them.
 .
 
 requires(
+    perl            => '5.6.1',
+    'Spiffy'        => undef,
+    'List::Util'    => undef,
     'XML::Twig'     => undef,
     'XML::Clean'    => undef,
     'Hook::LexWrap' => undef,

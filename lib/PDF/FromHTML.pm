@@ -1,7 +1,14 @@
 package PDF::FromHTML;
-$PDF::FromHTML::VERSION = '0.02';
+$PDF::FromHTML::VERSION = '0.04';
 
 use strict;
+use warnings;
+use Spiffy '-base';
+
+field 'pdf';
+field 'twig';
+field 'args';
+
 use Cwd;
 use XML::Clean;
 use File::Temp;
@@ -18,14 +25,18 @@ PDF::FromHTML - Convert HTML documents to PDF
 
 =head1 VERSION
 
-This document describes version 0.02 of PDF::FromHTML, released 
-July 18, 2004.
+This document describes version 0.04 of PDF::FromHTML, released 
+September 23, 2004.
 
 =head1 SYNOPSIS
 
     my $pdf = PDF::FromHTML->new( encoding => 'utf-8' );
     $pdf->load_file('source.html');
-    $pdf->convert;
+    $pdf->convert(
+        Font => '/path/to/font.ttf',
+        LineHeight => 10,
+        Landscape => 1,
+    );
     $pdf->write_file('target.pdf');
 
 =head1 DESCRIPTION
@@ -42,17 +53,20 @@ More documentation is expected soon.
 
 sub new {
     my $class = shift;
-    return bless( { twig => PDF::FromHTML::Twig->new, args => { @_ } }, $class );
+    bless({
+        twig => PDF::FromHTML::Twig->new,
+        args => { @_ },
+    }, $class);
 }
-
-sub pdf { $_[0]{pdf} }
-sub twig { $_[0]{twig} }
-sub args { $_[0]{args} }
 
 sub load_file {
     my ($self, $file) = @_;
+    $self->{file} = $file;
+}
 
-    local $SIG{__WARN__} = sub { 1 };
+sub parse_file {
+    my $self = shift;
+    my $file = $self->{file};
 
     my $dir = Cwd::getcwd();
     if (!ref $file) {
@@ -81,27 +95,32 @@ sub load_file {
 }
 
 sub convert {
-    my $self = shift;
+    my ($self, %args) = @_;
 
-    local $SIG{__WARN__} = sub { 1 };
+    {
+        # import arguments into Twig parameters
+        no strict 'refs';
+        ${"PDF::FromHTML::Twig::$_"} = $args{$_} foreach keys %args;
+    }
 
-    my ($fh, $filename) = File::Temp::tempfile( SUFFIX => '.xml');
+    $self->parse_file;
+
+    my ($fh, $filename) = File::Temp::tempfile(
+        SUFFIX => '.xml',
+        UNLINK => 1,
+    );
     binmode($fh);
     print $fh $self->twig->sprint;
     close $fh;
 
-    my $pdf = eval { PDF::Template->new( filename => $filename ) }
+    $self->pdf(eval { PDF::Template->new( filename => $filename ) })
       or die "$filename: $@";
-
-    $pdf->param(@_);
-    $self->{pdf} = $pdf;
+    $self->pdf->param(@_);
 }
 
 sub write_file {
     my $self = shift;
-
-    local $SIG{__WARN__} = sub { 1 };
-    $self->{pdf}->write_file(@_);
+    $self->pdf->write_file(@_);
 }
 
 1;
