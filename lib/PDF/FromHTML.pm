@@ -1,5 +1,5 @@
 package PDF::FromHTML;
-$PDF::FromHTML::VERSION = '0.06';
+$PDF::FromHTML::VERSION = '0.07';
 
 use strict;
 use warnings;
@@ -25,8 +25,8 @@ PDF::FromHTML - Convert HTML documents to PDF
 
 =head1 VERSION
 
-This document describes version 0.06 of PDF::FromHTML, released 
-November 23, 2004.
+This document describes version 0.07 of PDF::FromHTML, released 
+December 8, 2004.
 
 =head1 SYNOPSIS
 
@@ -130,9 +130,13 @@ sub convert {
 
     binmode($fh, ($] >= 5.007003) ? (':utf8') : ());
 
-    # print STDERR "==> Temp file written to $filename\n";
-    print $fh $self->twig->sprint;
+    # XXX HACK! XXX
+    my $text = $self->twig->sprint;
+    $text =~ s{\$(__[A-Z_]+__)}{<var name='$1' />}g;
+    print $fh $text;
     close $fh;
+
+    # print STDERR "==> Temp file written to $filename\n";
 
     local $^W;
     $self->pdf(eval { PDF::Template->new( filename => $filename ) })

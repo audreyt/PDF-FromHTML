@@ -1,3 +1,16 @@
+[Changes for 0.07 - 2004-12-08]
+
+Heading fonts are made much bigger.
+
+Prelminary support for <img src="http://..."> via LWP.
+
+Use Image::Size to determine image size correctly.
+
+Correct layout for mixed colspan and rowspan.
+
+Variable support via a plain $__PAGE__ in text
+(this interface may change into <var> the future).
+
 [Changes for 0.06 - 2004-11-23]
 
 Correctly fallback to XML::Clean if HTML::Tidy is unavailable.

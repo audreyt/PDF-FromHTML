@@ -33,6 +33,8 @@ requires(qw(
     XML::Twig               0
     HTML::Tidy              0
     Graphics::ColorNames    0
+    LWP::Simple             0
+    Image::Size             0
     PDF::Writer             0.03
     PDF::API2               0.40_52
     PDF::Template           0.18

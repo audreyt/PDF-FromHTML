@@ -67,7 +67,9 @@ use constant IgnoreTags => { map {$_ => 1} qw(
     label basefont big caption option cite
     dd dfn dt base code map iframe ins kbd legend
     samp span dir strike meta link tbody q tfoot
-    button thead var tt select s 
+    button thead tt select s 
+
+    var
 ) };
 use constant TwigArguments => (
     twig_handlers => {
@@ -76,7 +78,7 @@ use constant TwigArguments => (
             $_->set_gi( 'pdftemplate' );
         },
         map(("h$_" => (sub {
-            my $size = shift;
+            my $size = 4 + shift;
             sub {
                 $_->insert_new_elt( before => 'textbox' )
                   ->wrap_in('row')
@@ -147,11 +149,34 @@ use constant TwigArguments => (
             $_->erase;
         },
         img => sub {
-            my $file = File::Spec->rel2abs($_->att('src'));
+            my $src = $_->att('src');
+            my $file = File::Spec->rel2abs($src);
+            if ($src =~ m{^(\w+):/}) {
+                require LWP::Simple;
+                require File::Basename;
+                require File::Spec;
+                $file = File::Spec->catfile( File::Spec->tmpdir, File::Basename::basename($src) );
+                LWP::Simple::mirror( $src => $file );
+            }
+            my $w = $_->att('width');
+            my $h = $_->att('height');
+            if (!$w or !$h) {
+                require Image::Size;
+                my ($iw, $ih) = Image::Size::imgsize($file);
+                if (!$w and !$h) {
+                    ($w, $h) = ($iw, $ih);
+                }
+                elsif (!$w) {
+                    $w = $iw * ($h / $ih);
+                }
+                else {
+                    $h = $ih * ($w / $iw);
+                }
+            }
             my $image = $_->insert_new_elt(first_child => image => {
                 filename => $file,
-                w => ($_->att('width') / $PageWidth * $PageResolution),
-                h => ($_->att('height') / $PageWidth * $PageResolution),
+                w => ($w / $PageWidth * $PageResolution),
+                h => ($h / $PageWidth * $PageResolution),
                 type => '',
             } );
             $image->wrap_in('row');
@@ -203,6 +228,7 @@ use constant TwigArguments => (
         p => \&_p,
         li => \&_p,
         table => sub {
+            our @RowSpan = ();
             $_->root->del_att('#widths');
             $_->insert_new_elt(last_child => row => { h => $LineHeight });
             $_->erase;
@@ -245,9 +271,19 @@ use constant TwigArguments => (
             my @cells = @{ shift(@RowSpan) || [] };
             foreach my $i (1..$#cells) {
                 my $cell = $cells[$i] or next;
-                $children[$i-1]->insert_new_elt( before => 'textbox', $cell );
+                my $child;
+
+                if ( $child = $children[$i-1] ) {
+                    $child->insert_new_elt( before => 'textbox', $cell );
+                }
+                elsif ( $child = $children[$i-2] ) {
+                    $child->insert_new_elt( after => 'textbox', $cell );
+                }
+                else {
+                    next;
+                }
+
                 @children = $_->descendants('textbox');
-                # print STDERR "Pusing back to $i...\n";
             }
 
             my $cols = sum( map { $_->att('colspan') || 1 } @children );
@@ -286,6 +322,9 @@ use constant TwigArguments => (
             else {
                 $_->erase;
             }
+        },
+        var => sub {
+            # XXX - Proper variable support 
         },
         _default_ => sub {
             $_->erase if +IgnoreTags->{$_->tag};
@@ -401,19 +440,23 @@ sub _td {
         $_->wrap_in( font => { face => $font } );
     }
 
+    my $cols = $_->parent->att('_cols');
+
+    $cols += ($_->att('colspan') || 1);
+    $_->parent->set_att(_cols => $cols);
+
     if (my $rowspan = $_->att('rowspan')) {
         # ok, we can't really do this.
         # what we can do, though, is to add 'fake' cells in the next row.
         our @RowSpan;
         foreach my $i (1..($rowspan-1)) {
-            # print STDERR "Pusing into ", $_->pos, $/;
-            $RowSpan[$i][$_->pos] = $_->atts;
+            $RowSpan[$i][$cols] = $_->atts;
         }
     }
 }
 
 sub _percentify {
-    my $num = shift;
+    my $num = shift || '100%';
     return $1 if $num =~ /(\d+)%/;
     return int($num / $PageWidth * 100);
 }
