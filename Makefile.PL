@@ -21,19 +21,21 @@ This module requires two 'developer release' modules on CPAN:
 Please install them by downloading manually, because CPAN.pm
 may not be able to find them.
 
+Also, if you cannot install HTML::Tidy, you may use the XML::Clean
+module instead; however, you will run probably run into more
+"XML not well-formed" errors that way.
+
 .
 
-requires(
-    perl            => '5.6.1',
-    'Spiffy'        => undef,
-    'List::Util'    => undef,
-    'XML::Twig'     => undef,
-    'XML::Clean'    => undef,
-    'Hook::LexWrap' => undef,
-    'Color::Rgb'    => undef,
-    'PDF::Writer'   => '0.03',
-    'PDF::API2'     => '0.40_52',
-    'PDF::Template' => '0.18',
-);
+requires(qw(
+    perl                    5.6.1
+    List::Util              0
+    XML::Twig               0
+    HTML::Tidy              0
+    Graphics::ColorNames    0
+    PDF::Writer             0.03
+    PDF::API2               0.40_52
+    PDF::Template           0.18
+));
 
 WriteAll( sign => 1 );

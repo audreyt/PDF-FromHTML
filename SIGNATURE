@@ -6,7 +6,7 @@ Module::Signature installed, then type:
 
     % cpansign -v
 
-It will check each file's integrity, as well as the signature's
+It would check each file's integrity, as well as the signature's
 validity.  If "==> Signature verified OK! <==" is not displayed,
 the distribution may already have been compromised, and you should
 not run its Makefile.PL or Build.PL.
@@ -14,28 +14,28 @@ not run its Makefile.PL or Build.PL.
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-SHA1 789bcd3baadeb69d4ea30794841e415155427fa0 Changes
+SHA1 ba08cebd34eec2bb7636b4983b094f261bda2933 Changes
 SHA1 8f973a63820239079ca690b529866448c58cdb85 MANIFEST
-SHA1 5370afce0a13fc3eade61b4f1098417b6fd091cc META.yml
-SHA1 3645d2b10df468f56d4b4d8b8bf5dc5e0268e1a6 Makefile.PL
+SHA1 8441f1392de74b8fad32db59fa7258bbe1474491 META.yml
+SHA1 e59cc60bda6af8e1d0a0f27657e51d1cef160f04 Makefile.PL
 SHA1 cbb9037114e35d57ddf1b8399c5f2d74225ae1d3 README
-SHA1 b26ac27e5a57677aa210c0e908b28ff3ba28f03b inc/Module/Install.pm
-SHA1 fd56d5c793014bccac2cd1e61926c4da8538ef99 inc/Module/Install/Base.pm
-SHA1 9ce6768a7b8f7032ec89594b773fafd58c6feb1d inc/Module/Install/Can.pm
-SHA1 b6c8f0f22c4c8ba48a7bac2c5e4bd61803a7b097 inc/Module/Install/Fetch.pm
-SHA1 aabcd47178e4e7b27e340ff5273269c93697c9c1 inc/Module/Install/Makefile.pm
-SHA1 207dfa13341a374fc78325fbeb99bc36659aef2d inc/Module/Install/Metadata.pm
-SHA1 48ea7ce20a63ff1583036d6c4b8fd8e4c24457e6 inc/Module/Install/Scripts.pm
-SHA1 aff9341a15c04faec47089851e43d9d4061337e7 inc/Module/Install/Win32.pm
-SHA1 8e0d347ca21bc18b380d9d1aa5910b8d078a76b7 inc/Module/Install/WriteAll.pm
-SHA1 5f30940373d0502305921d8c56149af20b3c5a52 lib/PDF/FromHTML.pm
-SHA1 82ce62a777dad32fdda19c186fb268a7f4bbb6a7 lib/PDF/FromHTML/Twig.pm
+SHA1 06d883487127fa0026311904e7c4867e850c505c inc/Module/Install.pm
+SHA1 2771d5c5033e94c4789c66a0aad4e21c62985ce9 inc/Module/Install/Base.pm
+SHA1 b5e2d5fc07b92d042c97631d2b00f61f974fc164 inc/Module/Install/Can.pm
+SHA1 c3747aa4bd8faa530c974b78f729c67f15c6f928 inc/Module/Install/Fetch.pm
+SHA1 d8bc0d6e0a82d2b7533bdd3de467593094cc8b2c inc/Module/Install/Makefile.pm
+SHA1 6fca1d05c6b9a8f10865de5be4fefb9bfa7a52e9 inc/Module/Install/Metadata.pm
+SHA1 2e6f5004ac895a26c41f043bf8fa5efb4f5b21c4 inc/Module/Install/Scripts.pm
+SHA1 6b051a6d3ed824df40343a7ff09b66282e1783c3 inc/Module/Install/Win32.pm
+SHA1 77f82ce7c623e05304ac9aae05bcd1a5558fadbb inc/Module/Install/WriteAll.pm
+SHA1 38bde56fcfb386ec7e79a9590117828db9466991 lib/PDF/FromHTML.pm
+SHA1 aab93cad3a39ef5f2aaebc5b7236f9c67015c481 lib/PDF/FromHTML/Twig.pm
 SHA1 9af50433b66e9478039731d99c39979ace1ddaf5 script/html2pdf.pl
 SHA1 0c800af2d865899d299a4e169c1a2070c64c4862 t/0-signature.t
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.2.3 (FreeBSD)
+Version: GnuPG v1.2.6 (FreeBSD)
 
-iD8DBQFBUppztLPdNzw1AaARAlYFAJ9Go2jeVa9+VAWEHkqbGXbGRMd1CQCbB8Xq
-kl13VXv+QHsROQ+vmNNNzO0=
-=/Qnz
+iD8DBQFBm5XStLPdNzw1AaARAuc1AJwJoXpSBCQnwvQtWjxqdOfI4LPzAwCfcyCi
+fmYW0jJX9k+WvpOe1h8OUxM=
+=uv2z
 -----END PGP SIGNATURE-----

@@ -1,10 +1,7 @@
-#line 1 "inc/Module/Install/Scripts.pm - /usr/local/lib/perl5/site_perl/5.8.4/Module/Install/Scripts.pm"
-# $File: //depot/cpan/Module-Install/lib/Module/Install/Scripts.pm $ $Author: autrijus $
-# $Revision: #7 $ $Change: 1841 $ $DateTime: 2003/12/28 19:43:56 $ vim: expandtab shiftwidth=4
-
+#line 1 "inc/Module/Install/Scripts.pm - /usr/local/lib/perl5/site_perl/5.8.5/Module/Install/Scripts.pm"
 package Module::Install::Scripts;
 use Module::Install::Base; @ISA = qw(Module::Install::Base);
-$VERSION = '0.01';
+$VERSION = '0.02';
 use strict;
 use File::Basename ();
 

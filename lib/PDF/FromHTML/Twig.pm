@@ -5,7 +5,7 @@ use warnings;
 use base 'XML::Twig';
 
 use charnames ':full';
-use Color::Rgb;
+use Graphics::ColorNames qw( hex2tuple );
 use File::Spec;
 use File::Basename;
 use List::Util qw( sum first reduce );
@@ -37,6 +37,8 @@ our $FontBoldOblique = 'HelveticaBoldOblique';
 our $LineHeight = 12;
 our $FontUnicode = 'Helvetica';
 our $Font = $FontUnicode;
+# $Font = '/usr/local/share/fonts/TrueType/minguni.ttf';
+
 our $PageSize = 'A4';
 our $Landscape = 0;
 use constant SuperScript => [
@@ -110,8 +112,16 @@ use constant TwigArguments => (
             _set(underline => 1, $_);
             $_->erase;
         },
+        em => sub {
+            _set(font => $FontOblique, $_);
+            $_->erase;
+        },
         i => sub {
             _set(font => $FontOblique, $_);
+            $_->erase;
+        },
+        strong => sub {
+            _set(font => $FontBold, $_);
             $_->erase;
         },
         b => sub {
@@ -127,6 +137,9 @@ use constant TwigArguments => (
                         grep defined, map $_->att('h'), $_->descendants
                     )),
                 );
+            }
+            else {
+                $_->erase;
             }
         },
         hr => sub {
@@ -226,35 +239,38 @@ use constant TwigArguments => (
         tr => sub {
             return $_->erase if $_->descendants('row');
 
+            our @RowSpan;
+            foreach my $cell (reverse @{ shift(@RowSpan) || [] }) {
+                $_->insert_new_elt( first_child => 'textbox', $cell )
+            }
+
             my @children = $_->descendants('textbox');
+            my $cols = sum( map { $_->att('colspan') || 1 } @children );
+            # print STDERR "==> Total cols: $cols :".@children.$/;
 
             my $widths = $_->root->att('#widths') || [];
             my $width = $_->att('w') || ($widths->[$_->pos] ||= (
                 int(_percentify($_->parent('table')->att('width'))
-                    / @children) . '%'
+                    / $cols )
             ));
 
+            my $sum = 100;
+            my $last_child = pop(@children);
             foreach my $child (@children) {
-                $child->set_att( w => $width );
+                my $w = ($width * ($child->att('colspan') || 1));
+                $child->set_att( w => "$w%" );
+                $sum -= $w;
             }
+
+            $last_child->set_att( w => "$sum%" ) if $last_child;
+
             $_->set_tag('row');
             $_->set_att(lmargin => '3');
             $_->set_att(rmargin => '3');
             $_->set_att(border => $_->parent('table')->att('border'));
         },
-        td => sub {
-            return $_->erase if $_->descendants('row');
-
-            $_->set_tag('textbox');
-
-            if (my $font = _get(font => $_)) {
-                $_->wrap_in( font => { face => $font } );
-            }
-        },
-        th => sub {
-            $_->set_tag('textbox');
-            $_->set_text(join('', split(/\s+/, $_->text)));
-        },
+        td => \&_td,
+        th => \&_td,
         font => sub {
             $_->del_att('face');
 
@@ -285,14 +301,7 @@ use constant TwigArguments => (
                 $_->set_att(h => $LineHeight + (2 * ($h - 4)));
             }
             if (my $bgcolor = $_->att('bgcolor')) {
-                $_->set_att(
-                    bgcolor => do {
-                        local $_;
-                        my $rgb = Color::Rgb->new;
-                        $rgb->can($bgcolor =~ /^#/ ? 'hex2rgb' : 'name2rgb')
-                            ->($rgb, $bgcolor, ',');
-                    }
-                );
+                $_->set_att( bgcolor => _to_color($bgcolor) );
             }
             $_->del_att(qw(
                 color bordercolor bordercolordark bordercolorlight
@@ -378,6 +387,25 @@ sub _p {
     $_->erase;
 }
 
+sub _td {
+    return $_->erase if $_->descendants('row');
+
+    $_->set_tag('textbox');
+
+    if (my $font = _get(font => $_)) {
+        $_->wrap_in( font => { face => $font } );
+    }
+
+    if (my $rowspan = $_->att('rowspan')) {
+        # ok, we can't really do this.
+        # what we can do, though, is to add 'fake' cells in the next row.
+        our @RowSpan;
+        foreach my $i (1..($rowspan-1)) {
+            push @{ $RowSpan[$i] }, $_->atts;
+        }
+    }
+}
+
 sub _percentify {
     my $num = shift;
     return $1 if $num =~ /(\d+)%/;
@@ -387,6 +415,16 @@ sub _percentify {
 sub _type {
     my ($val, $elt) = @_;
     return first { $_ eq $val } grep defined, map $elt->att($_), qw(type class);
+}
+
+sub _to_color {
+    my ($color) = @_;
+
+    if ($color !~ s/^#//) {
+        $color = Graphics::ColorNames->new('Netscape')->hex($color);
+    }
+
+    return join ',', hex2tuple($color);
 }
 
 1;

@@ -1,5 +1,15 @@
-XXX - Temporarily out of order - XXX
+[Changes for 0.05 - 2004-11-18]
 
-0.04: Adds parameters to ->convert() so page size, font height
-      Jetc can be tweaked.
+HTML::Tidy is now preferred over XML::Clean.
 
+Graphics::ColorNames now replaces Color::Rgb.
+
+Dropped dependency on Spiffy and Hook::LexWrap.
+
+TD and TH's "rowspan" and "colspan" is now handled, albeit imperfectly.
+
+Widths in TD and TH in the same TR now always adds back to 100%.
+
+[Changes for 0.04 - 2004-09-23]
+
+Adds parameters to ->convert() so page size, font height etc can be tweaked.
