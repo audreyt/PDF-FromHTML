@@ -1,3 +1,10 @@
+[Changes for 0.06 - 2004-11-23]
+
+Correctly fallback to XML::Clean if HTML::Tidy is unavailable.
+
+Rowspan was only renfered properly on leading columns; now it should
+work on all columns.
+
 [Changes for 0.05 - 2004-11-18]
 
 HTML::Tidy is now preferred over XML::Clean.

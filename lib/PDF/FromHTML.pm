@@ -1,5 +1,5 @@
 package PDF::FromHTML;
-$PDF::FromHTML::VERSION = '0.05';
+$PDF::FromHTML::VERSION = '0.06';
 
 use strict;
 use warnings;
@@ -25,8 +25,8 @@ PDF::FromHTML - Convert HTML documents to PDF
 
 =head1 VERSION
 
-This document describes version 0.05 of PDF::FromHTML, released 
-November 18, 2004.
+This document describes version 0.06 of PDF::FromHTML, released 
+November 23, 2004.
 
 =head1 SYNOPSIS
 
@@ -81,7 +81,7 @@ sub parse_file {
         $content = $$file;
     }
 
-    if (my $encoding = ($self->args->{encoding} || 'utf8') and $] >= 5.007003) {
+    if ($self->args and my $encoding = ($self->args->{encoding} || 'utf8') and $] >= 5.007003) {
         require Encode;
         $content = Encode::decode($encoding, $content, Encode::FB_XMLCREF());
     }
@@ -89,7 +89,7 @@ sub parse_file {
     $content =~ s{&nbsp;}{}g;
     $content =~ s{<!--.*?-->}{}gs;
 
-    if (my $tidy = $self->tidy) {
+    if (UNIVERSAL::can(my $tidy = $self->tidy, 'clean')) {
         if ($] >= 5.007003) {
             $content = Encode::encode( ascii => $content, Encode::FB_XMLCREF());
         }

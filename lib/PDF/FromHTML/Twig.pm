@@ -240,11 +240,16 @@ use constant TwigArguments => (
             return $_->erase if $_->descendants('row');
 
             our @RowSpan;
-            foreach my $cell (reverse @{ shift(@RowSpan) || [] }) {
-                $_->insert_new_elt( first_child => 'textbox', $cell )
+            my @children = $_->descendants('textbox');
+
+            my @cells = @{ shift(@RowSpan) || [] };
+            foreach my $i (1..$#cells) {
+                my $cell = $cells[$i] or next;
+                $children[$i-1]->insert_new_elt( before => 'textbox', $cell );
+                @children = $_->descendants('textbox');
+                # print STDERR "Pusing back to $i...\n";
             }
 
-            my @children = $_->descendants('textbox');
             my $cols = sum( map { $_->att('colspan') || 1 } @children );
             # print STDERR "==> Total cols: $cols :".@children.$/;
 
@@ -401,7 +406,8 @@ sub _td {
         # what we can do, though, is to add 'fake' cells in the next row.
         our @RowSpan;
         foreach my $i (1..($rowspan-1)) {
-            push @{ $RowSpan[$i] }, $_->atts;
+            # print STDERR "Pusing into ", $_->pos, $/;
+            $RowSpan[$i][$_->pos] = $_->atts;
         }
     }
 }

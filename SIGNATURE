@@ -14,9 +14,9 @@ not run its Makefile.PL or Build.PL.
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-SHA1 ba08cebd34eec2bb7636b4983b094f261bda2933 Changes
+SHA1 fffc5c488227e7a84d8723d00a33dd17c21274df Changes
 SHA1 8f973a63820239079ca690b529866448c58cdb85 MANIFEST
-SHA1 8441f1392de74b8fad32db59fa7258bbe1474491 META.yml
+SHA1 e479c236dfe473a3005ac3b6c04fee8860e6b692 META.yml
 SHA1 e59cc60bda6af8e1d0a0f27657e51d1cef160f04 Makefile.PL
 SHA1 cbb9037114e35d57ddf1b8399c5f2d74225ae1d3 README
 SHA1 06d883487127fa0026311904e7c4867e850c505c inc/Module/Install.pm
@@ -28,14 +28,14 @@ SHA1 6fca1d05c6b9a8f10865de5be4fefb9bfa7a52e9 inc/Module/Install/Metadata.pm
 SHA1 2e6f5004ac895a26c41f043bf8fa5efb4f5b21c4 inc/Module/Install/Scripts.pm
 SHA1 6b051a6d3ed824df40343a7ff09b66282e1783c3 inc/Module/Install/Win32.pm
 SHA1 77f82ce7c623e05304ac9aae05bcd1a5558fadbb inc/Module/Install/WriteAll.pm
-SHA1 38bde56fcfb386ec7e79a9590117828db9466991 lib/PDF/FromHTML.pm
-SHA1 aab93cad3a39ef5f2aaebc5b7236f9c67015c481 lib/PDF/FromHTML/Twig.pm
+SHA1 1a6b872797e6c1668b61754beefe864312846303 lib/PDF/FromHTML.pm
+SHA1 7bd22fcffd2e2c26d8a58339208263f3da9cd0ea lib/PDF/FromHTML/Twig.pm
 SHA1 9af50433b66e9478039731d99c39979ace1ddaf5 script/html2pdf.pl
 SHA1 0c800af2d865899d299a4e169c1a2070c64c4862 t/0-signature.t
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.2.6 (FreeBSD)
 
-iD8DBQFBm5XStLPdNzw1AaARAuc1AJwJoXpSBCQnwvQtWjxqdOfI4LPzAwCfcyCi
-fmYW0jJX9k+WvpOe1h8OUxM=
-=uv2z
+iD8DBQFBouS8tLPdNzw1AaARAmQbAJkBLtgAbtnts2HVyx+XUjqKyvGUiQCfQ4Hd
+p8aZsjAZ2veYyawLjTDpzl4=
+=zqld
 -----END PGP SIGNATURE-----
