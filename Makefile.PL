@@ -25,6 +25,8 @@ may not be able to find them.
 requires(
     'XML::Twig'     => undef,
     'XML::Clean'    => undef,
+    'Hook::LexWrap' => undef,
+    'Color::Rgb'    => undef,
     'PDF::Writer'   => '0.01',
     'PDF::API2'     => '0.40_52',
 );

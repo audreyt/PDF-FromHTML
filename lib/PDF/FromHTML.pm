@@ -1,11 +1,12 @@
 package PDF::FromHTML;
-$PDF::FromHTML::VERSION = '0.00_01';
+$PDF::FromHTML::VERSION = '0.00_02';
 
 use strict;
 use Cwd;
 use XML::Clean;
 use File::Temp;
 use File::Basename;
+use Hook::LexWrap;
 
 use PDF::Writer 'pdfapi2';
 use PDF::Template;
@@ -60,6 +61,13 @@ sub load_file {
         $file = \"$$file";
     }
     $$file =~ s{<!--\s.*?\s-->}{}gs;
+
+    # lower-case all tags
+    my $lc_tags = Hook::LexWrap::wrap(
+        XML::Clean::handle_start,
+        pre => sub { $_[0] = lc($_[0]) },
+    );
+
     $self->twig->parse( XML::Clean::clean($$file, '1.0', $self->args) );
     chdir $dir;
 }
@@ -77,7 +85,7 @@ sub convert {
       or die "$filename: $@";
 
     local $SIG{__WARN__} = sub {};
-    $pdf->param;
+    $pdf->param(@_);
     $self->{pdf} = $pdf;
 }
 

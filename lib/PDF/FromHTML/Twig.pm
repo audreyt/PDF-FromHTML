@@ -3,6 +3,7 @@ package PDF::FromHTML::Twig;
 use strict;
 use XML::Twig;
 use base 'XML::Twig';
+use Color::Rgb;
 use File::Spec;
 use File::Basename;
 
@@ -26,8 +27,14 @@ sub new {
 }
 
 use constant FontFace => 'Helvetica';
+use constant InlineTags => { map {$_ => 1} qw(
+    #PCDATA font
+) };
+use constant DeleteTags => { map {$_ => 1} qw(
+    head style
+) };
 use constant IgnoreTags => { map {$_ => 1} qw(
-    head style title center u sup p a b
+    title center u a b
     ol ul li i
 ) };
 use constant TwigArguments => (
@@ -40,25 +47,31 @@ use constant TwigArguments => (
             my $size = shift;
             sub {
                 $_->wrap_in(font => { h => 17 - $size });
-                $_->wrap_in('row');
+                $_->wrap_in(row => { h => 19 - $size });
                 $_->set_tag('textbox'),
                 $_->set_att( w => '100%' );
             };
         })->($_)), 1..6),
+        sup => sub {
+            $_->set_tag('font');
+            $_->set_att( h => 8 );
+        },
         img => sub {
             my $file = File::Spec->rel2abs($_->att('src'));
-            $_->del_att('src');
-            $_->set_att(filename => $file);
-            $_->set_att(w => $_->att('width'));
-            $_->set_att(h => $_->att('height'));
-            $_->set_att(type => lc((split(/\./, $file))[-1]));
-            $_->set_tag('image');
+            my $image = $_->insert_new_elt(first_child => image => {
+                filename => $file,
+                w => $_->att('width'),
+                h => $_->att('height'),
+                type => '', # XXX
+            } );
+            $image->wrap_in('row');
+            $_->erase;
         },
         body => sub {
             $_->wrap_in(
                 pagedef => {
                     pagesize => "A4",
-                    landscape => "1",
+                    landscape => "0",
                     margins => "10"
                 },
             );
@@ -72,21 +85,58 @@ use constant TwigArguments => (
             my $head = $pagedef->insert_new_elt(first_child => header => { header_height => 24 } );
             my $row = $head->insert_new_elt(first_child => 'row');
             $row->insert_new_elt(first_child => textbox => { w => '100%', text => '' });
+            foreach my $child ($_->children('#PCDATA')) {
+                $child->wrap_in('row');
+                $child->wrap_in(textbox => { w => '100%' });
+                my $textbox = $child->insert_new_elt(
+                    after => 'textbox', { w => '100%' }
+                );
+                $textbox->wrap_in('row');
+            }
+            $_->erase;
+        },
+        p => sub {
+            my @children;
+            foreach my $child ($_->children) {
+                +InlineTags->{$child->tag} or last;
+                push @children, $child->cut;
+            }
+
+            if (@children) {
+                my $textbox = $_->insert_new_elt(
+                    before => 'textbox', { w => '100%' }
+                );
+                $textbox->wrap_in('row');
+                $_->paste( last_child => $textbox ) for @children;
+            }
+            my $textbox = $_->insert_new_elt(
+                after => 'textbox', { w => '100%' }
+            );
+            $textbox->wrap_in('row');
             $_->erase;
         },
         table => sub {
             $_->root->del_att('#widths');
+            $_->insert_new_elt(last_child => row => { h => '12' });
             $_->erase;
         },
-        tr => sub { $_->set_tag('row') },
+        tr => sub {
+            return $_->erase if $_->descendants('row');
+            $_->set_tag('row'),
+        },
         td => sub {
+            return $_->erase if $_->descendants('row');
+
             $_->set_tag('textbox');
             $_->set_att(border => $_->parent('table')->att('border'));
             $_->set_att(lmargin => '3');
             $_->set_att(rmargin => '3');
 
             my $widths = $_->root->att('#widths') || [];
-            $_->set_att(w => $_->att('w') || $widths->[$_->pos]);
+            my $width = $_->att('w') || ($widths->[$_->pos] ||= (
+                int(100 / (1 + $_->prev_siblings + $_->next_siblings)) . '%'
+            ));
+            $_->set_att(w => $width);
         },
         th => sub {
             _->set_tag('textbox');
@@ -107,14 +157,13 @@ use constant TwigArguments => (
         },
         _default_ => sub {
             $_->erase if +IgnoreTags->{$_->tag};
+            $_->delete if +DeleteTags->{$_->tag};
         }
     },
     pretty_print => 'indented',
     empty_tags   => 'html',
     start_tag_handlers => {
         _all_ => sub {
-            $_->set_tag(lc($_->tag));
-
             if (my $w = $_->att('width')) {
                 $_->set_att(w => $w);
                 my $widths = $_->root->att('#widths') || [];
@@ -124,8 +173,18 @@ use constant TwigArguments => (
             if (my $h = $_->att('size')) {
                 $_->set_att(h => 10 + (2 * ($h - 3)));
             }
+            if (my $bgcolor = $_->att('bgcolor')) {
+                $_->set_att(
+                    bgcolor => do {
+                        local $_;
+                        my $rgb = Color::Rgb->new;
+                        $rgb->can($bgcolor =~ /^#/ ? 'hex2rgb' : 'name2rgb')
+                            ->($rgb, $bgcolor, ',');
+                    }
+                );
+            }
             $_->del_att(qw(
-                color bgcolor bordercolor bordercolordark bordercolorlight
+                color bordercolor bordercolordark bordercolorlight
                 cellpadding cellspacing size href
             ));
         },
