@@ -1,5 +1,5 @@
 package PDF::FromHTML;
-$PDF::FromHTML::VERSION = '0.00_02';
+$PDF::FromHTML::VERSION = '0.00_03';
 
 use strict;
 use Cwd;
@@ -18,7 +18,8 @@ PDF::FromHTML - Convert HTML documents to PDF
 
 =head1 VERSION
 
-This document describes version 0.01 of PDF::FromHTML, released July 15, 2004.
+This document describes version 0.00_03 of PDF::FromHTML,
+released July 16, 2004.
 
 =head1 SYNOPSIS
 

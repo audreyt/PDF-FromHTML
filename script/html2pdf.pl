@@ -2,8 +2,8 @@
 
 use FindBin;
 use PDF::FromHTML;
-# use lib '/usr/home/autrijus/private/PDF-Template/lib';
-# use lib "$FindBin::Bin/../lib";
+use lib '/usr/home/autrijus/private/PDF-Template/lib';
+use lib "$FindBin::Bin/../lib";
 
 =head1 NAME
 
@@ -19,6 +19,9 @@ my $pdf = PDF::FromHTML->new( encoding => 'utf-8' );
 
 $pdf->load_file(shift || '-');
 $pdf->convert;
+open X, '>/tmp/x';
+print X $pdf->twig->sprint;
+close X;
 $pdf->write_file(shift || '-');
 
 1;
