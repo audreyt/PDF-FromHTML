@@ -27,7 +27,7 @@ requires(
     'XML::Clean'    => undef,
     'Hook::LexWrap' => undef,
     'Color::Rgb'    => undef,
-    'PDF::Writer'   => '0.01',
+    'PDF::Writer'   => '0.02',
     'PDF::API2'     => '0.40_52',
 );
 

@@ -1,6 +1,7 @@
 package PDF::FromHTML::Twig;
 
 use strict;
+use charnames ':full';
 use XML::Twig;
 use base 'XML::Twig';
 use Color::Rgb;
@@ -29,12 +30,24 @@ sub new {
 use constant FontBold => 'HelveticaBold';
 use constant FontOblique => 'HelveticaOblique';
 use constant FontBoldOblique => 'HelveticaBoldOblique';
-use constant FontUnicode => do {
-    my $font = '/usr/X11R6/lib/X11/fonts/webfonts/arialuni.ttf';
-    (-e $font) ? $font : 'Helvetica';
-};
+use constant FontUnicode => 'Helvetica';
+#use constant FontUnicode => do {
+#    my $font = '/usr/X11R6/lib/X11/fonts/webfonts/arialuni.ttf' if 0;
+#    (-e $font) ? $font : 'Helvetica';
+#};
 use constant Font => +FontUnicode;
-
+use constant SuperScript => [
+    "\N{SUPERSCRIPT ZERO}", "\N{SUPERSCRIPT ONE}", "\N{SUPERSCRIPT TWO}",
+    "\N{SUPERSCRIPT THREE}", "\N{SUPERSCRIPT FOUR}", "\N{SUPERSCRIPT FIVE}",
+    "\N{SUPERSCRIPT SIX}", "\N{SUPERSCRIPT SEVEN}", "\N{SUPERSCRIPT EIGHT}",
+    "\N{SUPERSCRIPT NINE}",
+];
+use constant SubScript => [
+    "\N{SUBSCRIPT ZERO}", "\N{SUBSCRIPT ONE}", "\N{SUBSCRIPT TWO}",
+    "\N{SUBSCRIPT THREE}", "\N{SUBSCRIPT FOUR}", "\N{SUBSCRIPT FIVE}",
+    "\N{SUBSCRIPT SIX}", "\N{SUBSCRIPT SEVEN}", "\N{SUBSCRIPT EIGHT}",
+    "\N{SUBSCRIPT NINE}",
+];
 use constant InlineTags => { map {$_ => 1} qw(
     #PCDATA font
 ) };
@@ -42,7 +55,7 @@ use constant DeleteTags => { map {$_ => 1} qw(
     head style
 ) };
 use constant IgnoreTags => { map {$_ => 1} qw(
-    title center u a ul
+    title center a ul
 ) };
 use constant TwigArguments => (
     twig_handlers => {
@@ -53,53 +66,39 @@ use constant TwigArguments => (
         map(("h$_" => (sub {
             my $size = shift;
             sub {
-                $_->insert_new_elt( before => 'textbox' )->wrap_in('row');
-                $_->wrap_in(font => { h => 17 - $size });
-                $_->wrap_in(row => { h => 19 - $size });
+                $_->insert_new_elt( before => 'textbox' )
+                   ->wrap_in('row')
+                   ->wrap_in( font => { face => +FontBold } );
+                $_->wrap_in(font => { h => 18 - $size });
+                $_->wrap_in(row => { h => 20 - $size });
                 $_->set_tag('textbox'),
                 $_->set_att( w => '100%' );
             };
         })->($_)), 1..6),
         sup => sub {
-            #$_->set_tag('font');
-            #$_->set_att( h => 8 );
-            if ($] < 5.008) { require Encode::compat };
-            require Encode;
-
             my $digits = $_->text;
             my $text = '';
-
-            use charnames ':full';
-            my @chars = (
-                "\N{SUPERSCRIPT ZERO}",
-                "\N{SUPERSCRIPT ONE}",
-                "\N{SUPERSCRIPT TWO}",
-                "\N{SUPERSCRIPT THREE}",
-                "\N{SUPERSCRIPT FOUR}",
-                "\N{SUPERSCRIPT FIVE}",
-                "\N{SUPERSCRIPT SIX}",
-                "\N{SUPERSCRIPT SEVEN}",
-                "\N{SUPERSCRIPT EIGHT}",
-                "\N{SUPERSCRIPT NINE}",
-            );
-
-            while ($digits =~ s/(\d)//) {
-                $text .= $chars[$1];
-            }
-
+            $text .= +SuperScript->[$1] while $digits =~ s/(\d)//;
             $_->set_text($text);
             $_->erase;
         },
+        sub => sub {
+            my $digits = $_->text;
+            my $text = '';
+            $text .= +SubScript->[$1] while $digits =~ s/(\d)//;
+            $_->set_text($text);
+            $_->erase;
+        },
+        u => sub {
+            _set(underline => 1, $_);
+            $_->erase;
+        },
         i => sub {
-            my $fonts = $_->root->att('#fonts') || {};
-            $fonts->{$_->parent} = +FontOblique;
-            $_->root->set_att('#fonts', $fonts);
+            _set(font => +FontOblique, $_);
             $_->erase;
         },
         b => sub {
-            my $fonts = $_->root->att('#fonts') || {};
-            $fonts->{$_->parent} = +FontBold;
-            $_->root->set_att('#fonts', $fonts);
+            _set(font => +FontBold, $_);
             $_->erase;
         },
         hr => sub {
@@ -144,6 +143,12 @@ use constant TwigArguments => (
                 $child->wrap_in(textbox => { w => '100%' });
                 $child->insert_new_elt( after => 'textbox' )->wrap_in('row');
             }
+
+            # XXX - voodoo cleanup
+            foreach my $child ($_->descendants('textbox')) {
+                $child->delete if $child->text eq '1' and $child->att('w') eq '100%';
+            }
+
             $_->erase;
         },
         p => \&_p,
@@ -173,7 +178,19 @@ use constant TwigArguments => (
         },
         tr => sub {
             return $_->erase if $_->descendants('row');
-            $_->set_tag('row'),
+
+            my @children = $_->descendants('textbox');
+
+            my $widths = $_->root->att('#widths') || [];
+            my $width = $_->att('w') || ($widths->[$_->pos] ||= (
+                int(_percentify($_->parent('table')->att('width'))
+                    / @children) . '%'
+            ));
+
+            foreach my $child (@children) {
+                $child->set_att( w => $width );
+            }
+            $_->set_tag('row');
         },
         td => sub {
             return $_->erase if $_->descendants('row');
@@ -183,17 +200,10 @@ use constant TwigArguments => (
             $_->set_att(lmargin => '3');
             $_->set_att(rmargin => '3');
 
-            my $widths = $_->root->att('#widths') || [];
-            my $width = $_->att('w') || ($widths->[$_->pos] ||= (
-                int(100 / (2 + $_->prev_siblings + $_->next_siblings)) . '%'
-            ));
-            $_->set_att(w => $width);
-
             # XXX - breaks sup
-            #my $fonts = $_->root->att('#fonts') || {};
-            #if (my $font = $fonts->{$_}) {
-            #    $_->wrap_in( font => { face => $font } );
-            #}
+            if (my $font = _get(font => $_)) {
+                $_->wrap_in( font => { face => $font } );
+            }
         },
         th => sub {
             $_->set_tag('textbox');
@@ -248,6 +258,20 @@ use constant TwigArguments => (
     }
 );
 
+
+sub _set {
+    my ($key, $value, $elt) = @_;
+    my $att = $elt->root->att("#$key") || {};
+    $att->{$elt->parent} = $value;
+    $elt->root->set_att("#$key", $att);
+}
+
+sub _get {
+    my ($key, $elt) = @_;
+    my $att = $elt->root->att("#$key") || {};
+    return $att->{$elt};
+}
+
 sub _p {
     my @children;
     foreach my $child ($_->children) {
@@ -270,27 +294,45 @@ sub _p {
             $child->set_text(join(' ', grep length, split(/\n+/, $child->text)));
         }
 
-        my $fonts = $_->root->att('#fonts') || {};
+        my $font = _get(font => $_);
 
         if ($textbox->text =~ /[^\x00-\x7f]/) {
-            $fonts->{$_} = +FontUnicode;
+            $font = +FontUnicode;
         }
         elsif ($_->parent('i') and $_->parent('b')) {
-            $fonts->{$_} ||= +FontBoldOblique;
+            $font ||= +FontBoldOblique;
         }
         elsif ($_->parent('i')) {
-            $fonts->{$_} ||= +FontOblique;
+            $font ||= +FontOblique;
         }
         elsif ($_->parent('b')) {
-            $fonts->{$_} ||= +FontBold;
+            $font ||= +FontBold;
         }
 
-        if (my $font = $fonts->{$_}) {
-            $textbox->wrap_in('font' => { face => $font });
+        my %attr;
+        $attr{face} = $font if $font;
+        if (_get(underline => $_)) {
+            require PDF::Template::Constants;
+            $PDF::Template::Constants::Verify{ALIGN}{underline} = 1;
+            $attr{align} = 'underline' 
         }
+
+        $textbox->wrap_in('font' => \%attr) if %attr;
     }
+
     $_->insert_new_elt( first_child => 'textbox' )->wrap_in('row') if $_->tag eq 'p';
     $_->erase;
+}
+
+sub _percentify {
+    my $num = _perc($_[0]);
+    return $num;
+}
+
+sub _perc {
+    my $num = shift;
+    return $1 if $num =~ /(\d+)%/;
+    return int($num / 560 * 100);
 }
 
 1;

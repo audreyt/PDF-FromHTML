@@ -1,4 +1,15 @@
 ----------------------------------------------------------------------
+r6165:  autrijus | 2004-07-17T19:57:04.494550Z
+
+* This be 0.00_04.
+* Support for <u>, <sup> and <sub> completed.
+* We now require PDF::Writer 0.02 (part of PDF-Template-PDFAPI2)
+  for underline and sup/sub munging.
+----------------------------------------------------------------------
+r6164:  autrijus | 2004-07-17T19:43:52.411358Z
+
+* Underline now works, for some obscure definition of work.
+----------------------------------------------------------------------
 r6157:  autrijus | 2004-07-17T01:52:24.280506Z
 
 * This be 0.00_03.
