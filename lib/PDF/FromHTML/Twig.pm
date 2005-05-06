@@ -26,86 +26,112 @@ No user-serviceable parts inside.
 
 sub new {
     my $class = shift;
-    return $class->SUPER::new( $class->TwigArguments, @_ );
+    return $class->SUPER::new($class->TwigArguments, @_);
 }
 
-our $PageWidth = 640;
-our $PageResolution = 540;
-our $FontBold = 'HelveticaBold';
-our $FontOblique = 'HelveticaOblique';
+our $PageWidth       = 640;
+our $PageResolution  = 540;
+our $FontBold        = 'HelveticaBold';
+our $FontOblique     = 'HelveticaOblique';
 our $FontBoldOblique = 'HelveticaBoldOblique';
-our $LineHeight = 12;
-our $FontUnicode = 'Helvetica';
-our $Font = $FontUnicode;
+our $LineHeight      = 12;
+our $FontUnicode     = 'Helvetica';
+our $Font            = $FontUnicode;
+
 # $Font = '/usr/local/share/fonts/TrueType/minguni.ttf';
 
-our $PageSize = 'A4';
+our $PageSize  = 'A4';
 our $Landscape = 0;
 use constant SuperScript => [
-    "\N{SUPERSCRIPT ZERO}",  "\N{SUPERSCRIPT ONE}",   "\N{SUPERSCRIPT TWO}",
-    "\N{SUPERSCRIPT THREE}", "\N{SUPERSCRIPT FOUR}",  "\N{SUPERSCRIPT FIVE}",
-    "\N{SUPERSCRIPT SIX}",   "\N{SUPERSCRIPT SEVEN}", "\N{SUPERSCRIPT EIGHT}",
+    "\N{SUPERSCRIPT ZERO}",
+    "\N{SUPERSCRIPT ONE}",
+    "\N{SUPERSCRIPT TWO}",
+    "\N{SUPERSCRIPT THREE}",
+    "\N{SUPERSCRIPT FOUR}",
+    "\N{SUPERSCRIPT FIVE}",
+    "\N{SUPERSCRIPT SIX}",
+    "\N{SUPERSCRIPT SEVEN}",
+    "\N{SUPERSCRIPT EIGHT}",
     "\N{SUPERSCRIPT NINE}",
 ];
 use constant SubScript => [
-    "\N{SUBSCRIPT ZERO}",    "\N{SUBSCRIPT ONE}",     "\N{SUBSCRIPT TWO}",
-    "\N{SUBSCRIPT THREE}",   "\N{SUBSCRIPT FOUR}",    "\N{SUBSCRIPT FIVE}",
-    "\N{SUBSCRIPT SIX}",     "\N{SUBSCRIPT SEVEN}",   "\N{SUBSCRIPT EIGHT}",
+    "\N{SUBSCRIPT ZERO}",
+    "\N{SUBSCRIPT ONE}",
+    "\N{SUBSCRIPT TWO}",
+    "\N{SUBSCRIPT THREE}",
+    "\N{SUBSCRIPT FOUR}",
+    "\N{SUBSCRIPT FIVE}",
+    "\N{SUBSCRIPT SIX}",
+    "\N{SUBSCRIPT SEVEN}",
+    "\N{SUBSCRIPT EIGHT}",
     "\N{SUBSCRIPT NINE}",
 ];
-use constant InlineTags => { map {$_ => 1} '#PCDATA', 'font' };
-use constant DeleteTags => { map {$_ => 1} qw(
-    head style applet script
-) };
-use constant IgnoreTags => { map {$_ => 1} qw(
-    title a ul
+use constant InlineTags => { map { $_ => 1 } '#PCDATA', 'font' };
+use constant DeleteTags => {
+    map { $_ => 1 }
+      qw(
+      head style applet script
+      )
+};
+use constant IgnoreTags => {
+    map { $_ => 1 }
+      qw(
+      title a ul
 
-    del address blockquote colgroup fieldset
-    input form frameset object noframes noscript
-    small optgroup isindex area textarea col
-    pre frame param menu acronym abbr bdo
-    label basefont big caption option cite
-    dd dfn dt base code map iframe ins kbd legend
-    samp span dir strike meta link tbody q tfoot
-    button thead tt select s 
+      del address blockquote colgroup fieldset
+      input form frameset object noframes noscript
+      small optgroup isindex area textarea col
+      pre frame param menu acronym abbr bdo
+      label basefont big caption option cite
+      dd dfn dt base code map iframe ins kbd legend
+      samp span dir strike meta link tbody q tfoot
+      button thead tt select s
 
-    var
-) };
+      var
+      )
+};
 use constant TwigArguments => (
     twig_handlers => {
         html => sub {
             $_->del_atts;
-            $_->set_gi( 'pdftemplate' );
+            $_->set_gi('pdftemplate');
         },
-        map(("h$_" => (sub {
-            my $size = 4 + shift;
-            sub {
-                $_->insert_new_elt( before => 'textbox' )
-                  ->wrap_in('row')
-                  ->wrap_in( font => { face => $FontBold } );
-                $_->wrap_in(font => { h => $LineHeight + 6 - $size });
-                $_->wrap_in(row => { h => $LineHeight + 8 - $size });
-                $_->set_tag('textbox'),
-                $_->set_att( w => '100%' );
-            };
-        })->($_)), 1..6),
+        map((
+                "h$_" => (
+                    sub {
+                        my $size = 4 + shift;
+                        sub {
+                            $_->insert_new_elt(before => 'textbox')
+                              ->wrap_in('row')
+                              ->wrap_in(font => { face => $FontBold });
+                            $_->wrap_in(
+                                font => { h => $LineHeight + 6 - $size });
+                            $_->wrap_in(
+                                row => { h => $LineHeight + 8 - $size });
+                            $_->set_tag('textbox'), $_->set_att(w => '100%');
+                        };
+                    }
+                  )->($_)
+            ),
+            1 .. 6),
         center => sub {
             foreach my $child ($_->children('p')) {
+
                 # XXX - revert other blocklevel to left/original alignment
-                $child->set_att( align => 'center' );
+                $child->set_att(align => 'center');
             }
             $_->erase;
         },
         sup => sub {
             my $digits = $_->text;
-            my $text = '';
+            my $text   = '';
             $text .= +SuperScript->[$1] while $digits =~ s/(\d)//;
             $_->set_text($text);
             $_->erase;
         },
         sub => sub {
             my $digits = $_->text;
-            my $text = '';
+            my $text   = '';
             $text .= +SubScript->[$1] while $digits =~ s/(\d)//;
             $_->set_text($text);
             $_->erase;
@@ -134,10 +160,14 @@ use constant TwigArguments => (
             if (my $tag = (_type(header => $_) || _type(footer => $_))) {
                 $_->set_tag($tag);
                 $_->set_att(
-                    "${tag}_height" => int(sum(
-                        $LineHeight * 2,
-                        grep defined, map $_->att('h'), $_->descendants
-                    )),
+                    "${tag}_height" => int(
+                        sum(
+                            $LineHeight * 2,
+                            grep defined,
+                            map $_->att('h'),
+                            $_->descendants
+                        )
+                    ),
                 );
             }
             else {
@@ -145,88 +175,117 @@ use constant TwigArguments => (
             }
         },
         hr => sub {
-            $_->insert_new_elt( first_child => (_type(pagebreak => $_) || 'hr') );
+            $_->insert_new_elt(first_child => (_type(pagebreak => $_) || 'hr'));
             $_->erase;
         },
         img => sub {
-            my $src = $_->att('src');
+            my $src  = $_->att('src');
             my $file = File::Spec->rel2abs($src);
             if ($src =~ m{^(\w+):/}) {
                 require LWP::Simple;
                 require File::Basename;
                 require File::Spec;
-                $file = File::Spec->catfile( File::Spec->tmpdir, File::Basename::basename($src) );
-                LWP::Simple::mirror( $src => $file );
+                $file =
+                  File::Spec->catfile(File::Spec->tmpdir,
+                    File::Basename::basename($src));
+                LWP::Simple::mirror($src => $file);
             }
-            my $w = $_->att('width');
-            my $h = $_->att('height');
-            if (!$w or !$h) {
-                require Image::Size;
-                my ($iw, $ih) = Image::Size::imgsize($file);
-                if (!$w and !$h) {
-                    ($w, $h) = ($iw, $ih);
+
+            # CSA - check for real file first
+            #
+            if (-e $file) {
+                my $w = $_->att('width');
+                my $h = $_->att('height');
+                if (($w eq '') or ($h eq '')) {
+                    require Image::Size;
+                    my ($iw, $ih) = Image::Size::imgsize($file);
+
+                    # CSA - catch this now, before we crash
+                    #
+                    warn "unable to read image file '$file' ($w x $h)"
+                      unless (defined $iw && defined $ih);
+                    $iw ||= 1;
+                    $ih ||= 1;
+
+                    if (!$w and !$h) {
+                        ($w, $h) = ($iw, $ih);
+                    }
+                    elsif (!$w) {
+                        $w = $iw * ($h / $ih);
+                    }
+                    else {
+                        $h = $ih * ($w / $iw);
+                    }
                 }
-                elsif (!$w) {
-                    $w = $iw * ($h / $ih);
-                }
-                else {
-                    $h = $ih * ($w / $iw);
-                }
+
+                my $image = $_->insert_new_elt(
+                    first_child => image => {
+                        filename => $file,
+                        w        => ($w / $PageWidth * $PageResolution),
+                        h        => ($h / $PageWidth * $PageResolution),
+                        type     => '',
+                    }
+                );
+                $image->wrap_in('row');
+
+                # CSA - File has gone missing
+                #
             }
-            my $image = $_->insert_new_elt(first_child => image => {
-                filename => $file,
-                w => ($w / $PageWidth * $PageResolution),
-                h => ($h / $PageWidth * $PageResolution),
-                type => '',
-            } );
-            $image->wrap_in('row');
+            else {
+                warn "image file '$file' does not exist";
+            }
+
             $_->erase;
         },
         body => sub {
+
             # XXX make pagedef into parameters
             if ($Landscape) {
                 require PDF::Template;
                 $PageSize = 'A4LANDSCAPE';
-                $PDF::Template::Constants::Verify{PAGESIZE}{__DEFAULT__} = 'A4LANDSCAPE';
+                $PDF::Template::Constants::Verify{PAGESIZE}{__DEFAULT__} =
+                  'A4LANDSCAPE';
                 $PDF::Template::Constants::Verify{PAGESIZE}{A4LANDSCAPE} = {
-                    PAGE_WIDTH => 842,
+                    PAGE_WIDTH  => 842,
                     PAGE_HEIGHT => 595,
                 };
             }
 
             $_->wrap_in(
                 pagedef => {
-                    pagesize => $PageSize,
+                    pagesize  => $PageSize,
                     landscape => $Landscape,
-                    margins => $LineHeight - 2,
+                    margins   => $LineHeight - 2,
                 },
             );
             $_->wrap_in(
                 font => {
                     face => $Font,
-                    h => $LineHeight - 2,
+                    h    => $LineHeight - 2,
                 }
             );
             my $pagedef = $_->parent->parent;
-            my $head = ($pagedef->descendants('header'))[0] || $pagedef->insert_new_elt(
-                first_child => header => { header_height => $LineHeight * 2 }
-            );
+            my $head    = ($pagedef->descendants('header'))[0]
+              || $pagedef->insert_new_elt(
+                first_child => header => { header_height => $LineHeight * 2 });
             my $row = $head->insert_new_elt(first_child => 'row');
-            $row->insert_new_elt(first_child => textbox => { w => '100%', text => '' });
+            $row->insert_new_elt(
+                first_child => textbox => { w => '100%', text => '' });
             foreach my $child ($_->children('#PCDATA')) {
-                $child->set_text(join(' ', grep length, split(/\n+/, $child->text)));
+                $child->set_text(
+                    join(' ', grep length, split(/\n+/, $child->text)));
                 if ($child->text =~ /[^\x00-\x7f]/) {
                     $child->wrap_in(font => { face => $FontUnicode });
                 }
                 $child->wrap_in('row');
                 $child->wrap_in(textbox => { w => '100%' });
-                $child->insert_new_elt( after => 'textbox' )->wrap_in('row');
+                $child->insert_new_elt(after => 'textbox')->wrap_in('row');
             }
 
             $_->erase;
         },
-        p => \&_p,
-        li => \&_p,
+        p     => \&_p,
+        li    => \&_p,
         table => sub {
             our @RowSpan = ();
             $_->root->del_att('#widths');
@@ -269,15 +328,15 @@ use constant TwigArguments => (
             my @children = $_->descendants('textbox');
 
             my @cells = @{ shift(@RowSpan) || [] };
-            foreach my $i (1..$#cells) {
+            foreach my $i (1 .. $#cells) {
                 my $cell = $cells[$i] or next;
                 my $child;
 
-                if ( $child = $children[$i-1] ) {
-                    $child->insert_new_elt( before => 'textbox', $cell );
+                if ($child = $children[ $i - 1 ]) {
+                    $child->insert_new_elt(before => 'textbox', $cell);
                 }
-                elsif ( $child = $children[$i-2] ) {
-                    $child->insert_new_elt( after => 'textbox', $cell );
+                elsif ($child = $children[ $i - 2 ]) {
+                    $child->insert_new_elt(after => 'textbox', $cell);
                 }
                 else {
                     next;
@@ -286,80 +345,82 @@ use constant TwigArguments => (
                 @children = $_->descendants('textbox');
             }
 
-            my $cols = sum( map { $_->att('colspan') || 1 } @children );
+            my $cols = sum(map { $_->att('colspan') || 1 } @children);
+
             # print STDERR "==> Total cols: $cols :".@children.$/;
 
             my $widths = $_->root->att('#widths') || [];
-            my $width = $_->att('w') || ($widths->[$_->pos] ||= (
-                int(_percentify($_->parent('table')->att('width'))
-                    / $cols )
-            ));
+            my $width = $_->att('w')
+              || ($widths->[ $_->pos ] ||=
+                (int(_percentify($_->parent('table')->att('width')) / $cols)));
 
-            my $sum = 100;
+            my $sum        = 100;
             my $last_child = pop(@children);
             foreach my $child (@children) {
                 my $w = ($width * ($child->att('colspan') || 1));
-                $child->set_att( w => "$w%" );
+                $child->set_att(w => "$w%");
                 $sum -= $w;
             }
 
-            $last_child->set_att( w => "$sum%" ) if $last_child;
+            $last_child->set_att(w => "$sum%") if $last_child;
 
             $_->set_tag('row');
             $_->set_att(lmargin => '3');
             $_->set_att(rmargin => '3');
-            $_->set_att(border => $_->parent('table')->att('border'));
+            $_->set_att(border  => $_->parent('table')->att('border'));
         },
-        td => \&_td,
-        th => \&_td,
+        td   => \&_td,
+        th   => \&_td,
         font => sub {
             $_->del_att('face');
 
             if ($_->att_names) {
                 $_->set_att(face => $Font);
-                $_->erase; # XXX
+                $_->erase;    # XXX
             }
             else {
                 $_->erase;
             }
         },
         var => sub {
-            # XXX - Proper variable support 
+
+            # XXX - Proper variable support
         },
         _default_ => sub {
-            $_->erase if +IgnoreTags->{$_->tag};
-            $_->delete if +DeleteTags->{$_->tag};
-        }
+            $_->erase  if +IgnoreTags->{ $_->tag };
+            $_->delete if +DeleteTags->{ $_->tag };
+          }
     },
-    pretty_print => 'indented',
-    empty_tags   => 'html',
+    pretty_print       => 'indented',
+    empty_tags         => 'html',
     start_tag_handlers => {
         _all_ => sub {
             if (my $w = $_->att('width') and 0) {
                 $_->set_att(w => $w);
                 my $widths = $_->root->att('#widths') || [];
-                $widths->[$_->pos] = $w;
+                $widths->[ $_->pos ] = $w;
                 $_->root->set_att('#widths' => $widths);
             }
             if (my $h = $_->att('size')) {
                 $_->set_att(h => $LineHeight + (2 * ($h - 4)));
             }
             if (my $bgcolor = $_->att('bgcolor')) {
-                $_->set_att( bgcolor => _to_color($bgcolor) );
+                $_->set_att(bgcolor => _to_color($bgcolor));
             }
-            $_->del_att(qw(
-                color bordercolor bordercolordark bordercolorlight
-                cellpadding cellspacing size href
-            ));
+            $_->del_att(
+                qw(
+                  color bordercolor bordercolordark bordercolorlight
+                  cellpadding cellspacing size href
+                  )
+            );
         },
     }
 );
 
-
 sub _set {
     my ($key, $value, $elt) = @_;
     my $att = $elt->root->att("#$key") || {};
-    $att->{$elt->parent} = $value;
+    $att->{ $elt->parent } = $value;
     $elt->root->set_att("#$key", $att);
 }
 
@@ -372,7 +433,7 @@ sub _get {
 sub _p {
     my @children;
     foreach my $child ($_->children) {
-        +InlineTags->{$child->tag} or last;
+        +InlineTags->{ $child->tag } or last;
         push @children, $child->cut;
     }
 
@@ -386,13 +447,13 @@ sub _p {
         $textbox->wrap_in('row');
         if ($_->tag eq 'li') {
             $textbox->insert_new_elt(
-                before => counter => { w => '3%', align => 'right' }
-            );
+                before => counter => { w => '3%', align => 'right' });
         }
         foreach my $child (@children) {
-            $child->paste( last_child => $textbox );
+            $child->paste(last_child => $textbox);
             $child->set_text(
-                join(' ', grep {length and $_ ne 1} split(/\n+/, $child->text))
+                join(' ',
+                    grep { length and $_ ne 1 } split(/\n+/, $child->text))
             );
         }
 
@@ -427,7 +488,8 @@ sub _p {
         $textbox->wrap_in('font' => \%attr) if %attr;
     }
 
-    $_->insert_new_elt( first_child => 'textbox' )->wrap_in('row') if $_->tag eq 'p';
+    $_->insert_new_elt(first_child => 'textbox')->wrap_in('row')
+      if $_->tag eq 'p';
     $_->erase;
 }
 
@@ -437,7 +499,7 @@ sub _td {
     $_->set_tag('textbox');
 
     if (my $font = _get(font => $_)) {
-        $_->wrap_in( font => { face => $font } );
+        $_->wrap_in(font => { face => $font });
     }
 
     my $cols = $_->parent->att('_cols');
@@ -446,10 +508,11 @@ sub _td {
     $_->parent->set_att(_cols => $cols);
 
     if (my $rowspan = $_->att('rowspan')) {
+
         # ok, we can't really do this.
         # what we can do, though, is to add 'fake' cells in the next row.
         our @RowSpan;
-        foreach my $i (1..($rowspan-1)) {
+        foreach my $i (1 .. ($rowspan - 1)) {
             $RowSpan[$i][$cols] = $_->atts;
         }
     }
@@ -484,7 +547,7 @@ Autrijus Tang E<lt>autrijus@autrijus.orgE<gt>
 
 =head1 COPYRIGHT
 
-Copyright 2004 by Autrijus Tang E<lt>autrijus@autrijus.orgE<gt>.
+Copyright 2004, 2005 by Autrijus Tang E<lt>autrijus@autrijus.orgE<gt>.
 
 This program is free software; you can redistribute it and/or 
 modify it under the same terms as Perl itself.
@@ -492,3 +555,4 @@ modify it under the same terms as Perl itself.
 See L<http://www.perl.com/perl/misc/Artistic.html>
 
 =cut
+

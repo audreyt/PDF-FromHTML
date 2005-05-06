@@ -9,17 +9,15 @@ license		('perl');
 version_from	('lib/PDF/FromHTML.pm');
 install_script  ('script/html2pdf.pl');
 
-eval { require PDF::API2; PDF::API2->VERSION ge '0.40_52' } and
 eval { require PDF::Template; $INC{'PDF/Writer.pm'} } or
     die << '.';
 
-This module requires two 'developer release' modules on CPAN:
+This module requires a 'developer release' modules on CPAN:
 
-    http://search.cpan.org/dist/PDF-API2/
     http://search.cpan.org/dist/PDF-Template-PDFAPI2/
 
-Please install them by downloading manually, because CPAN.pm
-may not be able to find them.
+Please install it by downloading manually, because CPAN.pm
+may not be able to find it.
 
 Also, if you cannot install HTML::Tidy, you may use the XML::Clean
 module instead; however, you will run probably run into more
@@ -36,7 +34,7 @@ requires(qw(
     LWP::Simple             0
     Image::Size             0
     PDF::Writer             0.03
-    PDF::API2               0.40_52
+    PDF::API2               0.40
     PDF::Template           0.18
 ));
 

@@ -16,4 +16,4 @@ META.yml
 README
 script/html2pdf.pl
 SIGNATURE
-t/0-signature.t
+t/1-basic.t

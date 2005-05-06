@@ -1,3 +1,8 @@
+[Changes for 0.08 - 2005-05-06]
+
+Fix image handler bug in Twig.pm for zero-width and missing image
+files, contributed by Charleston Software Associates.
+
 [Changes for 0.07 - 2004-12-08]
 
 Heading fonts are made much bigger.
