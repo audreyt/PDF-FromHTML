@@ -2,6 +2,7 @@ package PDF::FromHTML::Twig;
 
 use strict;
 use warnings;
+use XML::Twig;
 use base 'XML::Twig';
 
 use charnames ':full';
@@ -26,7 +27,7 @@ No user-serviceable parts inside.
 
 sub new {
     my $class = shift;
-    return $class->SUPER::new($class->TwigArguments, @_);
+    XML::Twig::new($class, $class->TwigArguments, @_);
 }
 
 our $PageWidth       = 640;

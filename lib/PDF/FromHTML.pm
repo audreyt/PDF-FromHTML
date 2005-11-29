@@ -1,5 +1,5 @@
 package PDF::FromHTML;
-$PDF::FromHTML::VERSION = '0.08';
+$PDF::FromHTML::VERSION = '0.10';
 
 use strict;
 use warnings;
@@ -15,9 +15,24 @@ use Cwd;
 use File::Temp;
 use File::Basename;
 
-use PDF::Writer 'pdfapi2';
+use PDF::Writer;
 use PDF::Template;
 use PDF::FromHTML::Twig;
+
+use constant PDF_WRITER_BACKEND => do {
+    local $@;
+    eval { ref(PDF::Writer->new) }
+        or die( "Please install PDF::API2 (preferred) or pdflib_pl first" );
+};
+use constant HAS_HTML_TIDY => do {
+    local $@;
+    eval { require HTML::Tidy; 1 } or do {
+        unless ( eval { require XML::Clean; 1 } ) {
+            die( "Please install HTML::Tidy (preferred) or XML::Clean first" );
+        }
+        0; # Has XML::Clean but no HTML::Tidy
+    };
+};
 
 =head1 NAME
 
@@ -25,7 +40,7 @@ PDF::FromHTML - Convert HTML documents to PDF
 
 =head1 VERSION
 
-This document describes version 0.08 of PDF::FromHTML, released May 6, 2005.
+This document describes version 0.10 of PDF::FromHTML, released Nov 29, 2005.
 
 =head1 SYNOPSIS
 
@@ -46,8 +61,6 @@ transformations implemented in L<PDF::FromHTML::Twig>.
 There is also a command-line utility, L<html2pdf.pl>, that comes
 with this distribution.
 
-More documentation is expected soon.
-
 =head1 PUBLIC METHODS
 
 =cut
@@ -56,7 +69,6 @@ sub new {
     my $class = shift;
     bless({
         twig => PDF::FromHTML::Twig->new,
-        tidy => eval { require HTML::Tidy; HTML::Tidy->new },
         args => { @_ },
     }, $class);
 }
@@ -90,18 +102,17 @@ sub parse_file {
     $content =~ s{&nbsp;}{}g;
     $content =~ s{<!--.*?-->}{}gs;
 
-    if (UNIVERSAL::can(my $tidy = $self->tidy, 'clean')) {
+    if (HAS_HTML_TIDY) {
         if ($] >= 5.007003) {
             $content = Encode::encode( ascii => $content, Encode::FB_XMLCREF());
         }
-        $content = $self->tidy->clean(
+        $content = HTML::Tidy->new->clean(
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<html xmlns="http://www.w3.org/1999/xhtml">',
             $content,
         );
     }
     else {
-        require XML::Clean;
         $content =~ s{&#(\d+);}{chr $1}eg;
         $content =~ s{&#x([\da-fA-F]+);}{chr hex $1}eg;
         $content = XML::Clean::clean($content, '1.0', { encoding => 'UTF-8' });

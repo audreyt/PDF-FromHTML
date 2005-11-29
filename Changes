@@ -1,3 +1,9 @@
+[Changes for 0.10 - 2005-11-29]
+
+Chase new versions of PDF::Template and PDF::Writer.
+
+Add support for PDFLib based rendering engine, in addition to PDF::API2.
+
 [Changes for 0.08 - 2005-05-06]
 
 Fix image handler bug in Twig.pm for zero-width and missing image
