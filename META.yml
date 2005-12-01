@@ -1,5 +1,5 @@
 name: PDF-FromHTML
-version: 0.10
+version: 0.11
 abstract: Convert HTML documents to PDF
 author: Autrijus Tang <autrijus@autrijus.org>
 license: perl

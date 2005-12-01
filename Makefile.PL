@@ -21,11 +21,21 @@ my @requires = qw(
 );
 
 unless (eval { require PDF::API2; 1 } or eval { require pdflib_pl; 1 }) {
-    push @require, ('PDF::API2' => 0);
-    print << '.';
+    if ($] >= 5.008) {
+        push @require, ('PDF::API2' => 0);
+        print << '.';
 *** If you cannot install PDF::API2, you may use the pdflib_pl
     module instead, available as a separate download on PDFLib homepage.
 .
+    }
+    else {
+        push @require, ('pdflib_pl' => 0);
+        print << '.';
+*** Perl 5.6.x users needs the pdflib_pl module, available as a
+    separate download on PDFLib homepage.  Alternatively, upgrade
+    to Perl 5.8 and use PDF::API2 from CPAN.
+.
+    }
 }
 
 unless (eval { require HTML::Tidy; 1 } or eval { require XML::Clean; 1 }) {

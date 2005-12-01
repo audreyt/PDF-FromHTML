@@ -1,5 +1,5 @@
 package PDF::FromHTML;
-$PDF::FromHTML::VERSION = '0.10';
+$PDF::FromHTML::VERSION = '0.11';
 
 use strict;
 use warnings;
@@ -19,8 +19,15 @@ use PDF::Writer;
 use PDF::Template;
 use PDF::FromHTML::Twig;
 
+use constant HAS_UNICODE_SUPPORT => ($] >= 5.008);
+
 use constant PDF_WRITER_BACKEND => do {
     local $@;
+
+    # For Perl 5.6.x, we have to use pdflib
+    PDF::Writer->import('pdflib')
+        unless HAS_UNICODE_SUPPORT;
+
     eval { ref(PDF::Writer->new) }
         or die( "Please install PDF::API2 (preferred) or pdflib_pl first" );
 };
@@ -40,7 +47,8 @@ PDF::FromHTML - Convert HTML documents to PDF
 
 =head1 VERSION
 
-This document describes version 0.10 of PDF::FromHTML, released Nov 29, 2005.
+This document describes version 0.11 of PDF::FromHTML,
+released December 1, 2005.
 
 =head1 SYNOPSIS
 
@@ -94,7 +102,8 @@ sub parse_file {
         $content = $$file;
     }
 
-    if ($self->args and my $encoding = ($self->args->{encoding} || 'utf8') and $] >= 5.007003) {
+    my $encoding = ($self->args->{encoding} || 'utf8');
+    if (HAS_UNICODE_SUPPORT and $self->args) {
         require Encode;
         $content = Encode::decode($encoding, $content, Encode::FB_XMLCREF());
     }
@@ -103,7 +112,7 @@ sub parse_file {
     $content =~ s{<!--.*?-->}{}gs;
 
     if (HAS_HTML_TIDY) {
-        if ($] >= 5.007003) {
+        if (HAS_UNICODE_SUPPORT) {
             $content = Encode::encode( ascii => $content, Encode::FB_XMLCREF());
         }
         $content = HTML::Tidy->new->clean(
@@ -157,7 +166,10 @@ sub convert {
         UNLINK => 1,
     );
 
-    binmode($fh, ($] >= 5.007003) ? (':utf8') : ());
+    binmode($fh);
+    if (HAS_UNICODE_SUPPORT) {
+        binmode($fh, ':utf8');
+    }
 
     # XXX HACK! XXX
     my $text = $self->twig->sprint;

@@ -1,3 +1,8 @@
+[Changes for 0.11 - 2005-12-01]
+
+For Perl 5.6.x, we have to use PDFLib as PDF::API2 only supports
+Perl 5.8+.  Reported by Jessie Chen.
+
 [Changes for 0.10 - 2005-11-29]
 
 Chase new versions of PDF::Template and PDF::Writer.
