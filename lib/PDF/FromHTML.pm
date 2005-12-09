@@ -1,6 +1,7 @@
 package PDF::FromHTML;
-$PDF::FromHTML::VERSION = '0.11';
+$PDF::FromHTML::VERSION = '0.12';
 
+use 5.006;
 use strict;
 use warnings;
 
@@ -26,7 +27,7 @@ use constant PDF_WRITER_BACKEND => do {
 
     # For Perl 5.6.x, we have to use pdflib
     PDF::Writer->import('pdflib')
-        unless HAS_UNICODE_SUPPORT;
+        unless HAS_UNICODE_SUPPORT();
 
     eval { ref(PDF::Writer->new) }
         or die( "Please install PDF::API2 (preferred) or pdflib_pl first" );
@@ -47,8 +48,8 @@ PDF::FromHTML - Convert HTML documents to PDF
 
 =head1 VERSION
 
-This document describes version 0.11 of PDF::FromHTML,
-released December 1, 2005.
+This document describes version 0.12 of PDF::FromHTML,
+released December 10, 2005.
 
 =head1 SYNOPSIS
 
@@ -103,7 +104,7 @@ sub parse_file {
     }
 
     my $encoding = ($self->args->{encoding} || 'utf8');
-    if (HAS_UNICODE_SUPPORT and $self->args) {
+    if (HAS_UNICODE_SUPPORT() and $self->args) {
         require Encode;
         $content = Encode::decode($encoding, $content, Encode::FB_XMLCREF());
     }
@@ -111,8 +112,8 @@ sub parse_file {
     $content =~ s{&nbsp;}{}g;
     $content =~ s{<!--.*?-->}{}gs;
 
-    if (HAS_HTML_TIDY) {
-        if (HAS_UNICODE_SUPPORT) {
+    if (HAS_HTML_TIDY()) {
+        if (HAS_UNICODE_SUPPORT()) {
             $content = Encode::encode( ascii => $content, Encode::FB_XMLCREF());
         }
         $content = HTML::Tidy->new->clean(
@@ -167,7 +168,7 @@ sub convert {
     );
 
     binmode($fh);
-    if (HAS_UNICODE_SUPPORT) {
+    if (HAS_UNICODE_SUPPORT()) {
         binmode($fh, ':utf8');
     }
 
@@ -207,7 +208,7 @@ L<PDF::FromHTML::Twig>, L<PDF::Template>, L<XML::Twig>.
 
 =head1 AUTHORS
 
-Autrijus Tang E<lt>autrijus@autrijus.orgE<gt>
+Audrey Tang E<lt>autrijus@autrijus.orgE<gt>
 
 =head1 CONTRIBUTORS
 
@@ -215,9 +216,9 @@ Charleston Software Associates E<lt>info@charletonsw.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright 2004, 2005 by Autrijus Tang E<lt>autrijus@autrijus.orgE<gt>.
+Copyright 2004, 2005 by Audrey Tang E<lt>autrijus@autrijus.orgE<gt>.
 
-This program is free software; you can redistribute it and/or 
+This program is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself.
 
 See L<http://www.perl.com/perl/misc/Artistic.html>

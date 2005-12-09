@@ -23,6 +23,14 @@ sub makemaker_args {
     $args;
 }
 
+sub build_subdirs {
+    my $self = shift;
+    my $subdirs = $self->makemaker_args->{DIR} ||= [];
+    for my $subdir (@_) {
+        push @$subdirs, $subdir;
+    }
+}
+
 sub clean_files {
     my $self = shift;
     my $clean = $self->makemaker_args->{clean} ||= {};
@@ -141,4 +149,4 @@ sub postamble {
 
 __END__
 
-#line 274
+#line 282

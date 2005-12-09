@@ -14,28 +14,31 @@ not run its Makefile.PL or Build.PL.
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-SHA1 45b2353fccf725842aac831ceb9ca8173a9285bd Changes
-SHA1 943a27a5093d440fa7e5408959bb99f48f3a194b MANIFEST
-SHA1 844f07f6b96b65420bf6b52595842c38bb8204a2 META.yml
-SHA1 dc1f519caa0231e8e7ea17ac3c6380ad7ce12aa5 Makefile.PL
-SHA1 b8b3a48f0956c79e5c36511197b5950679118a42 README
-SHA1 014bc8da033c1ff45d83d925ff658aa5fea343d8 inc/Module/Install.pm
-SHA1 a7f7e2bfb0ac6f8ad965832ef3a246a7bd433058 inc/Module/Install/Base.pm
-SHA1 7b0e82ea99187c2121bfc8fe590de8363e8100d7 inc/Module/Install/Can.pm
+SHA1 a0f4d15c2573480924f704f14ee22a42843ca012 Changes
+SHA1 311a23fbcf67f9cab3d3c228facd1725c8917c6d MANIFEST
+SHA1 94395f56fe9e8a996ea8afb90cc4a78b792889a2 META.yml
+SHA1 d16f0f511c7d34a5ebc1165b96bec239828933a7 Makefile.PL
+SHA1 07f6a3908f7a2fa188b3c0e436b64195480db719 README
+SHA1 d5916d204ea5d0021727e3fce585af50e7f74dc6 inc/Module/AutoInstall.pm
+SHA1 58fc2b1ce8f69cc733e9c0488df30a2bb30f915e inc/Module/Install.pm
+SHA1 e5ab295fd8b71c09331b674b668b5d6fbf1a1726 inc/Module/Install/AutoInstall.pm
+SHA1 489ba7fc8de4849958379bf4c91419d0c8576a85 inc/Module/Install/Base.pm
+SHA1 1ae0b64895f73745680a2c2950053f64ccc116cc inc/Module/Install/Can.pm
 SHA1 d097dedadac0edcafbee3a14c262e24089f5795e inc/Module/Install/Fetch.pm
-SHA1 4a702e765fcb130e262b9ba69a83c6c9da4e89e7 inc/Module/Install/Makefile.pm
-SHA1 2f9a6d1fe7413b0c41760664d3a2d7f23793911a inc/Module/Install/Metadata.pm
+SHA1 08bfc9e53d1e15f5556c9d282a7db70a68b9ff06 inc/Module/Install/Include.pm
+SHA1 95437b56faebe7e005ed3a0d5758f359ef264c26 inc/Module/Install/Makefile.pm
+SHA1 2ce5eea9c2002f5159d62410f5619aaebadc8918 inc/Module/Install/Metadata.pm
 SHA1 8c7eb61d081ec7783836d72ad81c0536df65dec0 inc/Module/Install/Scripts.pm
 SHA1 8ee248d67d4c61a4f01e6a96c41afbd93be4c9ef inc/Module/Install/Win32.pm
 SHA1 3c099dd7fb73a49bcc489b152c3ca3c7a1b36427 inc/Module/Install/WriteAll.pm
-SHA1 985b6b4b5e43c3b616442891856fec0726bf29ad lib/PDF/FromHTML.pm
+SHA1 7bd18f4a36629392c2ffce0162c04f3ec31d7187 lib/PDF/FromHTML.pm
 SHA1 aa8677e867553431a9bdf308d6498b169e297770 lib/PDF/FromHTML/Twig.pm
 SHA1 9af50433b66e9478039731d99c39979ace1ddaf5 script/html2pdf.pl
 SHA1 dba925c9cd7d09347a17d66d4d9d3bd8215456ec t/1-basic.t
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.2 (FreeBSD)
 
-iD8DBQFDjmhWtLPdNzw1AaARArLyAJ0TWoQXWEs3F9TVLKxMK7TBYRNgcwCghoAa
-8n5gjHTDWK/+qm0SBfSN8wQ=
-=XxgC
+iD8DBQFDmg7atLPdNzw1AaARAqiRAJ9BHE21nPDVjITUGQZtA7MnaiKK3wCeMOLJ
+gqbre2WPyb5C3/+T6LxcZD4=
+=azC4
 -----END PGP SIGNATURE-----
