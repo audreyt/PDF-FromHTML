@@ -13,7 +13,6 @@ requires qw(
     LWP::Simple             0
     Image::Size             0
     PDF::Writer             0.05
-    PDF::Template           0.30
 );
 
 unless (can_use('PDF::API2') or can_use('pdflib_pl')) {

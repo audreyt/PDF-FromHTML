@@ -1,9 +1,5 @@
 #!/usr/local/bin/perl
 
-#use FindBin;
-#use lib '/usr/home/autrijus/private/PDF-Template/lib';
-#use lib "$FindBin::Bin/../lib";
-
 use PDF::FromHTML;
 
 =head1 NAME
@@ -16,12 +12,18 @@ html2pdf.pl - Turn HTML to PDF
 
 =cut
 
-my $pdf = PDF::FromHTML->new( encoding => 'utf-8' );
+my $pdf = PDF::FromHTML->new(
+    encoding    => 'utf-8',
+);
 
 local $SIG{__DIE__} = sub { require Carp; Carp::confess(@_) };
 
 $pdf->load_file(shift || '-');
-$pdf->convert;
+$pdf->convert(
+#   Font        => 'traditional',
+#   LineHeight  => 11,
+#   Landscape   => 1,
+);
 #open X, '>/tmp/x';
 #print X $pdf->twig->sprint;
 #close X;
@@ -33,11 +35,11 @@ __END__
 
 =head1 AUTHORS
 
-Autrijus Tang E<lt>autrijus@autrijus.orgE<gt>
+Audrey Tang E<lt>cpan@audreyt.orgE<gt>
 
 =head1 COPYRIGHT
 
-Copyright 2004 by Autrijus Tang E<lt>autrijus@autrijus.orgE<gt>.
+Copyright 2004 by Audrey Tang E<lt>cpan@audreyt.orgE<gt>.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

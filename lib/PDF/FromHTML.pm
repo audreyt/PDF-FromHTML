@@ -1,5 +1,5 @@
 package PDF::FromHTML;
-$PDF::FromHTML::VERSION = '0.12';
+$PDF::FromHTML::VERSION = '0.20';
 
 use 5.006;
 use strict;
@@ -17,8 +17,8 @@ use File::Temp;
 use File::Basename;
 
 use PDF::Writer;
-use PDF::Template;
 use PDF::FromHTML::Twig;
+use PDF::FromHTML::Template;
 
 use constant HAS_UNICODE_SUPPORT => ($] >= 5.008);
 
@@ -46,19 +46,18 @@ use constant HAS_HTML_TIDY => do {
 
 PDF::FromHTML - Convert HTML documents to PDF
 
-=head1 VERSION
-
-This document describes version 0.12 of PDF::FromHTML,
-released December 10, 2005.
+This document describes version 0.13 of PDF::FromHTML,
+released September 12, 2005.
 
 =head1 SYNOPSIS
 
     my $pdf = PDF::FromHTML->new( encoding => 'utf-8' );
     $pdf->load_file('source.html');
     $pdf->convert(
-        Font => '/path/to/font.ttf',
-        LineHeight => 10,
-        Landscape => 1,
+        # With PDF::API2, font names such as 'traditional' also works
+        Font        => 'font.ttf',
+        LineHeight  => 10,
+        Landscape   => 1,
     );
     $pdf->write_file('target.pdf');
 
@@ -172,6 +171,9 @@ sub convert {
         binmode($fh, ':utf8');
     }
 
+    # use File::Copy;
+    # copy($filename => '/tmp/foo.xml');
+
     # XXX HACK! XXX
     my $text = $self->twig->sprint;
     $text =~ s{\$(__[A-Z_]+__)}{<var name='$1' />}g;
@@ -181,7 +183,7 @@ sub convert {
     # print STDERR "==> Temp file written to $filename\n";
 
     local $^W;
-    $self->pdf(eval { PDF::Template->new( filename => $filename ) })
+    $self->pdf(eval { PDF::FromHTML::Template->new( filename => $filename ) })
       or die "$filename: $@";
     $self->pdf->param(@_);
 }
@@ -208,7 +210,7 @@ L<PDF::FromHTML::Twig>, L<PDF::Template>, L<XML::Twig>.
 
 =head1 AUTHORS
 
-Audrey Tang E<lt>autrijus@autrijus.orgE<gt>
+Audrey Tang E<lt>cpan@audreyt.orgE<gt>
 
 =head1 CONTRIBUTORS
 
@@ -216,7 +218,7 @@ Charleston Software Associates E<lt>info@charletonsw.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright 2004, 2005 by Audrey Tang E<lt>autrijus@autrijus.orgE<gt>.
+Copyright 2004, 2005 by Audrey Tang E<lt>cpan@audreyt.orgE<gt>.
 
 This program is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself.

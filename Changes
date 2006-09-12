@@ -1,3 +1,12 @@
+[Changes for 0.20 - 2006-09-11]
+
+Bundle our private fork of PDF::Template as PDF::FromHTML::Template
+to work around the bug that PDF::Template 0.30 is no longer available
+no CPAN.
+
+Redesigned the table layout engine, so that tables with borders,
+colspan settings, and per-td widths are all respected.
+
 [Changes for 0.12 - 2005-12-01]
 
 For Perl 5.8.1, "use constant" alone seems not enough to pass

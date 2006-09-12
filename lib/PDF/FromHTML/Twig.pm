@@ -242,11 +242,11 @@ use constant TwigArguments => (
 
             # XXX make pagedef into parameters
             if ($Landscape) {
-                require PDF::Template;
+                require PDF::FromHTML::Template;
                 $PageSize = 'A4LANDSCAPE';
-                $PDF::Template::Constants::Verify{PAGESIZE}{__DEFAULT__} =
+                $PDF::FromHTML::Template::Constants::Verify{PAGESIZE}{__DEFAULT__} =
                   'A4LANDSCAPE';
-                $PDF::Template::Constants::Verify{PAGESIZE}{A4LANDSCAPE} = {
+                $PDF::FromHTML::Template::Constants::Verify{PAGESIZE}{A4LANDSCAPE} = {
                     PAGE_WIDTH  => 842,
                     PAGE_HEIGHT => 595,
                 };
@@ -289,7 +289,102 @@ use constant TwigArguments => (
         li    => \&_p,
         table => sub {
             our @RowSpan = ();
+
+            my $cols = $_->root->att('#total_cols');
+
+            my $widths = $_->root->att('#widths');
+            if (!$widths) {
+                $widths = [];
+                $_->root->set_att('#widths', $widths);
+            }
+            my $table_width = $_->root->att('#total_width');
+            if (!$table_width) {
+                $table_width = _percentify($_->att('width'), $PageWidth);
+                $_->root->set_att('#total_width', $table_width);
+            }
+
+            my $unallocated_sum  = 100;
+            my $unallocated_cols = 0;
+            foreach my $idx (0..$cols-1) {
+                if (my $w = $widths->[$idx]) {
+                    $unallocated_sum -= $w;
+                }
+                else {
+                    $unallocated_cols++;
+                }
+            }
+
+            if ($unallocated_cols and $unallocated_sum > 0) {
+                # warn "UNALLOC: $unallocated_cols, $unallocated_sum\n";
+                # Populate unallocated columns
+                my $w = int($unallocated_sum / $unallocated_cols);
+                $widths->[$_] ||= $w for (0..$cols-1);
+            }
+            elsif ($unallocated_cols) {
+                # Redistribute all columns.
+                my $w = int(100 / $cols);
+                $widths->[$_] = $w for (0..$cols-1);
+            }
+            elsif ($unallocated_sum < 0) {
+                # warn "WIDTHS: @$widths ($unallocated_sum)\n";
+                # Redistribute all columns, part 2. -- not sure we should do it actually.
+                my $overflow = (100-$unallocated_sum);
+                $widths->[$_] = int($widths->[$_] * 100 / $overflow) for (0..$cols-1);
+            }
+
+            for ($_->children('tr')) {
+                return $_->erase if $_->descendants('row');
+
+                my @children = $_->descendants('textbox');
+
+                my @cells = @{ shift(@RowSpan) || [] };
+                foreach my $i (1 .. $#cells) {
+                    my $cell = $cells[$i] or next;
+                    my $child;
+
+                    if ($child = $children[ $i - 1 ]) {
+                        $child->insert_new_elt(before => 'textbox', $cell);
+                    }
+                    elsif ($child = $children[ $i - 2 ]) {
+                        $child->insert_new_elt(after => 'textbox', $cell);
+                    }
+                    else {
+                        next;
+                    }
+
+                    @children = $_->descendants('textbox');
+                }
+
+                my $cols = sum(map { $_->att('colspan') || 1 } @children);
+
+                # print STDERR "==> Total cols: $cols :".@children.$/;
+
+                my $sum         = 100;
+                my $last_child  = pop(@children);
+                my $col_idx     = 0;
+                foreach my $child (@children) {
+                    my $colspan = $child->att('colspan') || 1;
+                    my $w = 0;
+                    foreach my $idx ($col_idx .. $col_idx+$colspan-1) {
+                        $w += $widths->[$idx];
+                    }
+                    $col_idx += $colspan;
+                    $child->set_att(w => "$w%");
+                    $sum -= $w;
+                }
+
+                $last_child->set_att(w => "$sum%") if $last_child;
+
+                $_->set_tag('row');
+                $_->set_att(lmargin => '3');
+                $_->set_att(rmargin => '3');
+                $_->set_att(border  => $_->parent('table')->att('border'));
+                $_->set_att(h => $LineHeight);
+             }
+
             $_->root->del_att('#widths');
+            $_->root->set_att('#total_width' => undef);
+            $_->root->set_att('#total_cols' => undef);
             $_->insert_new_elt(last_child => row => { h => $LineHeight });
             $_->erase;
         },
@@ -322,54 +417,6 @@ use constant TwigArguments => (
             $_->insert_new_elt(last_child => row => { h => $LineHeight });
             $_->erase;
         },
-        tr => sub {
-            return $_->erase if $_->descendants('row');
-
-            our @RowSpan;
-            my @children = $_->descendants('textbox');
-
-            my @cells = @{ shift(@RowSpan) || [] };
-            foreach my $i (1 .. $#cells) {
-                my $cell = $cells[$i] or next;
-                my $child;
-
-                if ($child = $children[ $i - 1 ]) {
-                    $child->insert_new_elt(before => 'textbox', $cell);
-                }
-                elsif ($child = $children[ $i - 2 ]) {
-                    $child->insert_new_elt(after => 'textbox', $cell);
-                }
-                else {
-                    next;
-                }
-
-                @children = $_->descendants('textbox');
-            }
-
-            my $cols = sum(map { $_->att('colspan') || 1 } @children);
-
-            # print STDERR "==> Total cols: $cols :".@children.$/;
-
-            my $widths = $_->root->att('#widths') || [];
-            my $width = $_->att('w')
-              || ($widths->[ $_->pos ] ||=
-                (int(_percentify($_->parent('table')->att('width')) / $cols)));
-
-            my $sum        = 100;
-            my $last_child = pop(@children);
-            foreach my $child (@children) {
-                my $w = ($width * ($child->att('colspan') || 1));
-                $child->set_att(w => "$w%");
-                $sum -= $w;
-            }
-
-            $last_child->set_att(w => "$sum%") if $last_child;
-
-            $_->set_tag('row');
-            $_->set_att(lmargin => '3');
-            $_->set_att(rmargin => '3');
-            $_->set_att(border  => $_->parent('table')->att('border'));
-        },
         td   => \&_td,
         th   => \&_td,
         font => sub {
@@ -396,12 +443,6 @@ use constant TwigArguments => (
     empty_tags         => 'html',
     start_tag_handlers => {
         _all_ => sub {
-            if (my $w = $_->att('width') and 0) {
-                $_->set_att(w => $w);
-                my $widths = $_->root->att('#widths') || [];
-                $widths->[ $_->pos ] = $w;
-                $_->root->set_att('#widths' => $widths);
-            }
             if (my $h = $_->att('size')) {
                 $_->set_att(h => $LineHeight + (2 * ($h - 4)));
             }
@@ -480,9 +521,9 @@ sub _p {
             $align .= '_underline';
             $textbox->del_att('align');
 
-            require PDF::Template::Constants;
-            $PDF::Template::Constants::Verify{ALIGN}{$align} = 1
-              if %PDF::Template::Constants::Verify;
+            require PDF::FromHTML::Template::Constants;
+            $PDF::FromHTML::Template::Constants::Verify{ALIGN}{$align} = 1
+              if %PDF::FromHTML::Template::Constants::Verify;
             $attr{align} = $align;
         }
 
@@ -503,10 +544,26 @@ sub _td {
         $_->wrap_in(font => { face => $font });
     }
 
-    my $cols = $_->parent->att('_cols');
+    my $cols = $_->parent->att('_cols') || 0;
+
+    no warnings 'uninitialized';
+    if ($_->att('colspan') <= 1 and my $width = $_->att('width')) {
+        my $table_width = $_->root->att('#total_width');
+        my $cell_width = _percentify($width, int($table_width * $PageWidth / 100));
+        # Register us in the width table
+        my $widths = $_->root->att('#widths');
+        if (!$widths) {
+            $widths = [];
+            $_->root->set_att('#widths', $widths);
+        }
+        # warn "[$cols] = $widths->[$cols] vs $cell_width\n";
+        $widths->[$cols] = $cell_width if $widths->[$cols] < $cell_width;
+    }
 
     $cols += ($_->att('colspan') || 1);
     $_->parent->set_att(_cols => $cols);
+    $_->root->set_att('#total_cols', $cols)
+        if $_->root->att('#total_cols') < $cols;
 
     if (my $rowspan = $_->att('rowspan')) {
 
@@ -518,11 +575,12 @@ sub _td {
         }
     }
 }
-
+  
 sub _percentify {
-    my $num = shift || '100%';
+    my $num = shift or return '100';
+    my $total_width = shift;
     return $1 if $num =~ /(\d+)%/;
-    return int($num / $PageWidth * 100);
+    return int($num / $total_width * 100);
 }
 
 sub _type {
@@ -544,11 +602,11 @@ sub _to_color {
 
 =head1 AUTHORS
 
-Autrijus Tang E<lt>autrijus@autrijus.orgE<gt>
+Audrey Tang E<lt>cpan@audreyt.orgE<gt>
 
 =head1 COPYRIGHT
 
-Copyright 2004, 2005 by Autrijus Tang E<lt>autrijus@autrijus.orgE<gt>.
+Copyright 2004, 2005 by Audrey Tang E<lt>cpan@audreyt.orgE<gt>.
 
 This program is free software; you can redistribute it and/or 
 modify it under the same terms as Perl itself.
