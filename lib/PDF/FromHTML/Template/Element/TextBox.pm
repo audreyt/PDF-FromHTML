@@ -106,9 +106,9 @@ sub render
         $context->{PDF}->restore_state;
     }
 
-    if ($context->get($self, 'BORDER'))
+    if (my $border = $context->get($self, 'BORDER'))
     {
-        $context->{PDF}->rect($orig_x, $y - $max_h + $h, $orig_w, $max_h);
+        $context->{PDF}->rect($orig_x, $y - $max_h + $h, $orig_w, $max_h, $border);
         $context->{PDF}->stroke;
     }
 

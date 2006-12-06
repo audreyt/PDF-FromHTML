@@ -32,7 +32,9 @@ sub _do_page
     my ($context) = @_;
     return 0 unless $self->should_render($context);
     unless ($self->{ITERATOR} && $self->{ITERATOR}->more_params)
-    { $self->{ITERATOR} = $self->make_iterator($context); }
+    {
+        $self->{ITERATOR} = $self->make_iterator($context);
+    }
     my $iterator = $self->{ITERATOR};
     $iterator->enter_scope;
     while ($iterator->can_continue)
@@ -96,7 +98,11 @@ sub render
 
     $iterator->exit_scope;
 
-    return 0 if $iterator->more_params;
+    if ($iterator->more_params) {
+        splice(@{$iterator->{DATA}}, 0, $iterator->{INDEX}+1);
+        $iterator->{MAX_INDEX} = $#{$iterator->{DATA}};
+        return 0;
+    }
 
     return 1;
 }

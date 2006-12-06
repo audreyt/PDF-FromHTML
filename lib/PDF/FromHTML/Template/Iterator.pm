@@ -137,7 +137,7 @@ sub more_space
 
     return 0 if $self->{NO_PARAMS};
 
-    return 1 if $self->{CONTEXT}->get($self, 'Y') >= $self->{CONTEXT}->get($self, 'Y2');
+    return 1 if $self->{CONTEXT}->get($self, 'Y') >= ($self->{CONTEXT}->get($self, 'END_Y'));
 
     return 0;
 }

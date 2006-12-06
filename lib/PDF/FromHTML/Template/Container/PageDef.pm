@@ -137,6 +137,7 @@ sub render
     my $done = 0;
     while (!$done)
     {
+        last if $::x++ > 10;
         $self->begin_page($context);
         $context->{PDF}->begin_page($pwidth, $pheight);
 

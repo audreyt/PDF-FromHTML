@@ -14,9 +14,9 @@ not run its Makefile.PL or Build.PL.
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-SHA1 fedfc992735e651e3d77d97e17a1fc0e7b332920 Changes
+SHA1 e1110bd4b4220a9773ba1df6baecae2b05510dc2 Changes
 SHA1 a56639e72313c3edb655a9b11ebaae9e0c62bdf6 MANIFEST
-SHA1 97c4ec2a565620695c5f2388f7eee16a7a7b9133 META.yml
+SHA1 5ed4022f486baf939278937648814dcba7966eb7 META.yml
 SHA1 a905154734a4de66070b0cfcb5df6ca74d47688c Makefile.PL
 SHA1 1d3eb713da065c3e8f6c29f2e15c298c42edd32b README
 SHA1 603bb9de29fb8cba7f13409c546750972eff645d inc/Module/AutoInstall.pm
@@ -26,12 +26,12 @@ SHA1 abe32855d75ab13747cf65765af9947b7a8c3057 inc/Module/Install/Base.pm
 SHA1 95b81d1e91bd634467bf633571eff4420e9c04eb inc/Module/Install/Can.pm
 SHA1 1fe98c63cf9d7271c8cb4183ba230f152df69e26 inc/Module/Install/Fetch.pm
 SHA1 0606a8b02a420600bc3e2b65ab82f70266784926 inc/Module/Install/Include.pm
-SHA1 2249171a2b72cd73ff2c0a06597d29f86e5df456 inc/Module/Install/Makefile.pm
-SHA1 381bb98ea3877bba49ae85e7a7ea130645fd3dbf inc/Module/Install/Metadata.pm
+SHA1 aa4a3d87cedc972e3dc0d5d156809624e6db9416 inc/Module/Install/Makefile.pm
+SHA1 f1d4e1bbcb40bb269f36e6dc011b3ca25d3829b7 inc/Module/Install/Metadata.pm
 SHA1 b384bd42bc6263dc56d04a884ef4e5fe340049f8 inc/Module/Install/Scripts.pm
 SHA1 0c2118868ef82ac517eb6d9c3bd93e6eb9bbf83e inc/Module/Install/Win32.pm
 SHA1 e827d6d43771032fa3df35c0ad5e5698d0e54cda inc/Module/Install/WriteAll.pm
-SHA1 235c5cb2a0e43605b4112aeadccd64bea303f8f8 lib/PDF/FromHTML.pm
+SHA1 2bf437801dab7fb0ba43b574575a973364140d4c lib/PDF/FromHTML.pm
 SHA1 2f9e0c31d4bbe3ef1ff50a29e843e68b6b9738f0 lib/PDF/FromHTML/Template.pm
 SHA1 02baf18dc18a119dcc625837f1b645c62b12af59 lib/PDF/FromHTML/Template/Base.pm
 SHA1 50cdf2f13a87ec85cb89bcb2ddeb1d358f909c31 lib/PDF/FromHTML/Template/Constants.pm
@@ -41,14 +41,14 @@ SHA1 c4ffebf1360662e6ccc2aa899da3a45e854bfc43 lib/PDF/FromHTML/Template/Containe
 SHA1 98578eea9d3c33b48c357ca0c0cef22c9a592e35 lib/PDF/FromHTML/Template/Container/Font.pm
 SHA1 597e8bbb204277fd378d28fc3655c3d8f8c62fb6 lib/PDF/FromHTML/Template/Container/Footer.pm
 SHA1 ffb2dea843e406a691a93ef6198662a983710c11 lib/PDF/FromHTML/Template/Container/Header.pm
-SHA1 dcda855c1d04f9c6f4180b63da04fbf8295d3dc9 lib/PDF/FromHTML/Template/Container/Loop.pm
+SHA1 a3ee65f56a0c0fe1c62ffa87550006141ad316c3 lib/PDF/FromHTML/Template/Container/Loop.pm
 SHA1 60b0f2d76d5afdaf5070f7257505effe6a3ba4b3 lib/PDF/FromHTML/Template/Container/Margin.pm
-SHA1 e0dc6b50741ae3e4deb92989e47c1323e6ac9884 lib/PDF/FromHTML/Template/Container/PageDef.pm
+SHA1 4606091ca2419939a8f43261364918b96c1bf631 lib/PDF/FromHTML/Template/Container/PageDef.pm
 SHA1 3f19626367b4233b30cb43d5d6df9d937b04e58f lib/PDF/FromHTML/Template/Container/PdfTemplate.pm
 SHA1 b37ef016d690c8f2f47dd0522583a03a77633616 lib/PDF/FromHTML/Template/Container/Row.pm
 SHA1 ed7fcff537515b181bda5a93ebf3f02ce73d8737 lib/PDF/FromHTML/Template/Container/Scope.pm
 SHA1 877fb4ba80605ab2d0ac2201f6a3f58dbcb2fd74 lib/PDF/FromHTML/Template/Container/Section.pm
-SHA1 94a04f95df239d19b5f3e2b75cf6bb05d3732b64 lib/PDF/FromHTML/Template/Context.pm
+SHA1 b87d254c02551dfd97c92427f9dfb8787698ccb2 lib/PDF/FromHTML/Template/Context.pm
 SHA1 4451e7e36ec28551cffb09fdcf187fa0a2b284c0 lib/PDF/FromHTML/Template/Element.pm
 SHA1 c0ebe64df6f5437770173708c1d53ed66fd870ad lib/PDF/FromHTML/Template/Element/Bookmark.pm
 SHA1 f1075bfec3034cb5130f38fd7242152de702512b lib/PDF/FromHTML/Template/Element/Circle.pm
@@ -56,11 +56,11 @@ SHA1 6712e105316593c1bcc6e3df758aca11d9016077 lib/PDF/FromHTML/Template/Element/
 SHA1 f11e9e0a09b7763286d1eb31bbe75e999471d06f lib/PDF/FromHTML/Template/Element/Image.pm
 SHA1 19026f51094df2b30e4143a177b49be9acb87632 lib/PDF/FromHTML/Template/Element/Line.pm
 SHA1 98eece4eb374d7cde41358b9360ccd578f329a08 lib/PDF/FromHTML/Template/Element/PageBreak.pm
-SHA1 a8cda4fd20bd2eb1c5332219d89994bb950c314a lib/PDF/FromHTML/Template/Element/TextBox.pm
+SHA1 0475a817bdebe67cf9c8e5dbf179b1ba71918c41 lib/PDF/FromHTML/Template/Element/TextBox.pm
 SHA1 c82694bcd799cd616e026948c3d48d44f2a7f6d2 lib/PDF/FromHTML/Template/Element/Var.pm
 SHA1 1911ca83963e864fcee30c62e0fd31b8f2632327 lib/PDF/FromHTML/Template/Element/Weblink.pm
 SHA1 a5b890a90482d38ccbb3d443fbe52e3c3f92566f lib/PDF/FromHTML/Template/Factory.pm
-SHA1 94a9a348948855c0c8df2794a0960adbb0c63159 lib/PDF/FromHTML/Template/Iterator.pm
+SHA1 900820c0caeb25227242b526f346c1a3608bcf76 lib/PDF/FromHTML/Template/Iterator.pm
 SHA1 82a43e255d8b37bc6b834f912bf83be00c6bf79a lib/PDF/FromHTML/Template/TextObject.pm
 SHA1 30332da1f599fac8b5cfbbc078d46c588b40120c lib/PDF/FromHTML/Twig.pm
 SHA1 cf53f30631379e1d6b178a91815a0b89773c3139 script/html2pdf.pl
@@ -68,7 +68,7 @@ SHA1 dba925c9cd7d09347a17d66d4d9d3bd8215456ec t/1-basic.t
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.3 (Darwin)
 
-iD8DBQFFBrYOtLPdNzw1AaARAk7aAJ98w3R4xLXlP+LyH8wGRjdZ3wXYjwCgitq2
-tjQq9MH/HTE+fMktL2Itf3M=
-=nCnL
+iD8DBQFFd1bWtLPdNzw1AaARAlRQAJ98+YVG86PhQYFkHHxSJsfd39V5VQCeIVGQ
+BVzIyQDnaWsH+e1YYLhBAOc=
+=qtus
 -----END PGP SIGNATURE-----

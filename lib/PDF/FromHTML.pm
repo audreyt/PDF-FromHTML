@@ -1,5 +1,5 @@
 package PDF::FromHTML;
-$PDF::FromHTML::VERSION = '0.20';
+$PDF::FromHTML::VERSION = '0.21';
 
 use 5.006;
 use strict;
@@ -45,9 +45,6 @@ use constant HAS_HTML_TIDY => do {
 =head1 NAME
 
 PDF::FromHTML - Convert HTML documents to PDF
-
-This document describes version 0.13 of PDF::FromHTML,
-released September 12, 2005.
 
 =head1 SYNOPSIS
 

@@ -73,11 +73,7 @@ sub resolve {
     my $obj_val = $obj->{$key};
 
     my $is_param = 0;
-    if ($obj->{$key} =~ /^\$(\S+)$/o) {
-        $is_param = 1;
-        $obj_val = $self->param($1)
-    }
-
+    $is_param = 1 if $obj_val =~ s/\$(\w+)/$self->param($1)/eg;
     return $obj_val unless $isDimension{$key};
 
 #GGG Does this adequately test values to make sure they're legal??
