@@ -290,7 +290,11 @@ use constant TwigArguments => (
         table => sub {
             our @RowSpan = ();
 
-            my $cols = $_->root->att('#total_cols');
+            my $cols = $_->root->att('#total_cols') or do {
+                $_->erase for $_->children('tr');
+                $_->erase;
+                return;
+            };
 
             my $widths = $_->root->att('#widths');
             if (!$widths) {
@@ -548,7 +552,7 @@ sub _td {
 
     no warnings 'uninitialized';
     if ($_->att('colspan') <= 1 and my $width = $_->att('width')) {
-        my $table_width = $_->root->att('#total_width');
+        my $table_width = $_->root->att('#total_width') || 100;
         my $cell_width = _percentify($width, int($table_width * $PageWidth / 100));
         # Register us in the width table
         my $widths = $_->root->att('#widths');
@@ -578,7 +582,7 @@ sub _td {
   
 sub _percentify {
     my $num = shift or return '100';
-    my $total_width = shift;
+    my $total_width = shift or Carp::confess( '100') ;
     return $1 if $num =~ /(\d+)%/;
     return int($num / $total_width * 100);
 }
@@ -606,12 +610,30 @@ Audrey Tang E<lt>cpan@audreyt.orgE<gt>
 
 =head1 COPYRIGHT
 
-Copyright 2004, 2005 by Audrey Tang E<lt>cpan@audreyt.orgE<gt>.
+Copyright 2004, 2005, 2006, 2007 by Audrey Tang E<lt>cpan@audreyt.orgE<gt>.
 
-This program is free software; you can redistribute it and/or 
-modify it under the same terms as Perl itself.
+This software is released under the MIT license cited below.  Additionally,
+when this software is distributed with B<Perl Kit, Version 5>, you may also
+redistribute it and/or modify it under the same terms as Perl itself.
 
-See L<http://www.perl.com/perl/misc/Artistic.html>
+=head2 The "MIT" License
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
 
 =cut
-

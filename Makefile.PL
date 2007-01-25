@@ -3,6 +3,7 @@
 use inc::Module::Install;
 
 name		'PDF-FromHTML';
+license         'MIT';
 all_from        'lib/PDF/FromHTML.pm';
 install_script  'script/html2pdf.pl';
 

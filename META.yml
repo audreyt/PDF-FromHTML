@@ -1,8 +1,12 @@
+--- 
 abstract: Convert HTML documents to PDF
 author: Audrey Tang <cpan@audreyt.org>
 distribution_type: module
 generated_by: Module::Install version 0.64
-license: perl
+license: MIT
+meta-spec: 
+  url: http://module-build.sourceforge.net/META-spec-v1.3.html
+  version: 1.3
 name: PDF-FromHTML
 no_index: 
   directory: 
@@ -16,4 +20,4 @@ requires:
   PDF::Writer: 0.05
   XML::Twig: 0
   perl: 5.6.0
-version: 0.21
+version: 0.22
