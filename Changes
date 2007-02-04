@@ -1,3 +1,13 @@
+[Changes for 0.23 - 2007-02-05]
+
+* Updated CAVEATS section to note that there is currently no plan
+  to support CSS for this module.
+  Contributed by: Craig Chant
+
+* Updated license info in scripts/html2pdf to MIT.
+
+* Various code warning/stricture/tidying up; no function changes.
+
 [Changes for 0.22 - 2007-01-25]
 
 * LICENSING CHANGE: This compilation and all individual files in it

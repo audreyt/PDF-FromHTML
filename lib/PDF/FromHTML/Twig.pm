@@ -612,9 +612,7 @@ Audrey Tang E<lt>cpan@audreyt.orgE<gt>
 
 Copyright 2004, 2005, 2006, 2007 by Audrey Tang E<lt>cpan@audreyt.orgE<gt>.
 
-This software is released under the MIT license cited below.  Additionally,
-when this software is distributed with B<Perl Kit, Version 5>, you may also
-redistribute it and/or modify it under the same terms as Perl itself.
+This software is released under the MIT license cited below.
 
 =head2 The "MIT" License
 

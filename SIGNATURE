@@ -14,11 +14,11 @@ not run its Makefile.PL or Build.PL.
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-SHA1 934ecea307ca9c2a757329d20ffeee466c5e703b Changes
+SHA1 412f0173c8fe5dd2f1340a7018f47e4caae51155 Changes
 SHA1 a56639e72313c3edb655a9b11ebaae9e0c62bdf6 MANIFEST
-SHA1 fddfb22071331eac031f2534710193c604d23413 META.yml
+SHA1 7af9ee4d4c1b6a7420dc6d7caaa6bc31a23b4061 META.yml
 SHA1 8124ee41c173886d167f43a4d2c5641dc5280f60 Makefile.PL
-SHA1 605e855fcf78c3ca9fe76233f1e9899e1bc1e6f6 README
+SHA1 9f050758e0dbcd4425d69cb7a17831870611d97e README
 SHA1 603bb9de29fb8cba7f13409c546750972eff645d inc/Module/AutoInstall.pm
 SHA1 9b2f9d83bcf77860f53a0c07c90a4a59ad9f5df1 inc/Module/Install.pm
 SHA1 ad955f51ad2c40d4ba35395c27f5ed899a80bf7a inc/Module/Install/AutoInstall.pm
@@ -31,7 +31,7 @@ SHA1 f1d4e1bbcb40bb269f36e6dc011b3ca25d3829b7 inc/Module/Install/Metadata.pm
 SHA1 b384bd42bc6263dc56d04a884ef4e5fe340049f8 inc/Module/Install/Scripts.pm
 SHA1 0c2118868ef82ac517eb6d9c3bd93e6eb9bbf83e inc/Module/Install/Win32.pm
 SHA1 e827d6d43771032fa3df35c0ad5e5698d0e54cda inc/Module/Install/WriteAll.pm
-SHA1 aae553d840c0f127e14b6371ca5f77545cc99c85 lib/PDF/FromHTML.pm
+SHA1 2b8de92503b1817204e44b2472dcc7b371580f14 lib/PDF/FromHTML.pm
 SHA1 2f9e0c31d4bbe3ef1ff50a29e843e68b6b9738f0 lib/PDF/FromHTML/Template.pm
 SHA1 02baf18dc18a119dcc625837f1b645c62b12af59 lib/PDF/FromHTML/Template/Base.pm
 SHA1 50cdf2f13a87ec85cb89bcb2ddeb1d358f909c31 lib/PDF/FromHTML/Template/Constants.pm
@@ -62,13 +62,13 @@ SHA1 1911ca83963e864fcee30c62e0fd31b8f2632327 lib/PDF/FromHTML/Template/Element/
 SHA1 a5b890a90482d38ccbb3d443fbe52e3c3f92566f lib/PDF/FromHTML/Template/Factory.pm
 SHA1 900820c0caeb25227242b526f346c1a3608bcf76 lib/PDF/FromHTML/Template/Iterator.pm
 SHA1 82a43e255d8b37bc6b834f912bf83be00c6bf79a lib/PDF/FromHTML/Template/TextObject.pm
-SHA1 3ba23bb0f78d1cfb36638ef2962e397576cc7424 lib/PDF/FromHTML/Twig.pm
-SHA1 cf53f30631379e1d6b178a91815a0b89773c3139 script/html2pdf.pl
+SHA1 3114016cc905a5dc9374003d231b41e42cb6697a lib/PDF/FromHTML/Twig.pm
+SHA1 528eec0f5859276a0bfb9f5f5e98edcfa6ebc7f2 script/html2pdf.pl
 SHA1 dba925c9cd7d09347a17d66d4d9d3bd8215456ec t/1-basic.t
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.3 (Darwin)
 
-iD8DBQFFuMHAtLPdNzw1AaARAljpAJ0Vtpyrkoa+DQBYjRT1/My0ynvsiACdGgx/
-DWE7kIF6eRekCMzxpd0g+RQ=
-=Y0vi
+iD8DBQFFxlaBtLPdNzw1AaARAr/wAKCwVOHrDVuuuJb6QoWu2s0iTOC9pACgtgTg
+Bw1q3Tq0kWr2XW9nnALLF0I=
+=yH4S
 -----END PGP SIGNATURE-----

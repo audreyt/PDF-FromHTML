@@ -1,5 +1,5 @@
 package PDF::FromHTML;
-$PDF::FromHTML::VERSION = '0.22';
+$PDF::FromHTML::VERSION = '0.23';
 
 use 5.006;
 use strict;
@@ -91,7 +91,7 @@ sub parse_file {
     my $dir = Cwd::getcwd();
 
     if (!ref $file) {
-        open my $fh, $file or die $!;
+        open my $fh, '<', $file or die $!;
         chdir File::Basename::dirname($file);
         $content = do { local $/; <$fh> };
     }
@@ -179,6 +179,7 @@ sub convert {
 
     # print STDERR "==> Temp file written to $filename\n";
 
+    local $@;
     local $^W;
     $self->pdf(eval { PDF::FromHTML::Template->new( filename => $filename ) })
       or die "$filename: $@";
@@ -201,6 +202,20 @@ Add the height and width attributes if you are creating the source HTML,
 it keeps PDF::FromHTML from having to open and read the source image file
 to get the real size.  Less file I/O means faster processing.
 
+=head1 CAVEATS
+
+Although PDF::FromHTML will work with both HTML and XHTML formats, it
+is not designed to utilise CSS.
+
+This means any HTML using external or inline CSS for design and
+layout, including but not limited to: images, backgrounds, colours,
+fonts etc... will not be converted into the PDF.
+
+To get an idea of the likely resulting PDF, you may wish to use an
+non-CSS capable browser for testing first.
+
+There is currently no plan to adapt this module to utilise CSS.
+
 =head1 SEE ALSO
 
 L<PDF::FromHTML::Twig>, L<PDF::Template>, L<XML::Twig>.
@@ -217,9 +232,7 @@ Charleston Software Associates E<lt>info@charletonsw.comE<gt>
 
 Copyright 2004, 2005, 2006, 2007 by Audrey Tang E<lt>cpan@audreyt.orgE<gt>.
 
-This software is released under the MIT license cited below.  Additionally,
-when this software is distributed with B<Perl Kit, Version 5>, you may also
-redistribute it and/or modify it under the same terms as Perl itself.
+This software is released under the MIT license cited below.
 
 =head2 The "MIT" License
 
