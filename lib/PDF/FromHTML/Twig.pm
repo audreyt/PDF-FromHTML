@@ -239,19 +239,6 @@ use constant TwigArguments => (
             $_->erase;
         },
         body => sub {
-
-            # XXX make pagedef into parameters
-            if ($Landscape) {
-                require PDF::FromHTML::Template;
-                $PageSize = 'A4LANDSCAPE';
-                $PDF::FromHTML::Template::Constants::Verify{PAGESIZE}{__DEFAULT__} =
-                  'A4LANDSCAPE';
-                $PDF::FromHTML::Template::Constants::Verify{PAGESIZE}{A4LANDSCAPE} = {
-                    PAGE_WIDTH  => 842,
-                    PAGE_HEIGHT => 595,
-                };
-            }
-
             $_->wrap_in(
                 pagedef => {
                     pagesize  => $PageSize,

@@ -20,4 +20,4 @@ requires:
   PDF::Writer: 0.05
   XML::Twig: 0
   perl: 5.6.0
-version: 0.23
+version: 0.24

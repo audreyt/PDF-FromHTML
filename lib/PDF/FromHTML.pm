@@ -1,5 +1,5 @@
 package PDF::FromHTML;
-$PDF::FromHTML::VERSION = '0.23';
+$PDF::FromHTML::VERSION = '0.24';
 
 use 5.006;
 use strict;
