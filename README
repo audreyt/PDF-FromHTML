@@ -16,7 +16,7 @@ PDF::FromHTML uses the standard perl module install process:
 
 * Copyright
 
-Copyright 2004, 2005, 2006, 2007 by Audrey Tang <cpan@audreyt.org>.
+Copyright 2004-2008 by Audrey Tang <cpan@audreyt.org>.
 
 This software is released under the MIT license cited below.
 

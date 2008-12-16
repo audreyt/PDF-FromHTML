@@ -1,3 +1,10 @@
+[Changes for 0.25 - 2009-01-01]
+
+* Added -l, -e, -f and -s flags to html2pdf.pl; see its POD for details.
+
+* Running "html2pdf.pl foo.html" now writes to "foo.html.pdf" instead of
+  STDOUT.  However, "html2pdf.pl foo.html > foo.pdf" is still supported.
+
 [Changes for 0.24 - 2007-02-14]
 
 * The "landscape" option to ->convert() now work as documented.

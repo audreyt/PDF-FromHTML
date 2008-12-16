@@ -1,35 +1,64 @@
 #!/usr/local/bin/perl
-
 use strict;
 use warnings;
+use Getopt::Long;
 use PDF::FromHTML;
 
 =head1 NAME
 
-html2pdf.pl - Turn HTML to PDF
+html2pdf.pl - Convert HTML to PDF
 
 =head1 SYNOPSIS
 
-    % html2pdf.pl source.html > target.pdf
+B<html2pdf.pl> S<[ B<-l> ]> S<[ B<-e> I<encoding> ] [ B<-f> I<font> ] [ B<-s> I<size> ]>
+            S<I<input.html> [ I<output.pdf> ]>
+
+If I<input.html> is not given, reads HTML from standard input.
+
+If I<output.pdf> is not given, writes PDF to the same name as the input file
+with an additional F<.pdf> suffix, or to standard output if it's being
+redirected to somewhere other than a terminal.
+
+If I<encoding> is not given, the input encoding defaults to C<utf-8>.
+
+If I<font> is not given, the base font family defaults to C<Helvetica>.
+The value of I<font> can be a truetype font file, one of the PDF core fonts,
+or one of: C<traditional>/C<simplified>/C<korean>/C<japanese>.
+
+If I<size> is not given, the base font size defaults to C<12> points.
+
+If B<-l> is specified, the output uses landscape layout.
 
 =cut
 
+my $font      = 'Helvetica';
+my $encoding  = 'utf-8';
+my $size      = 12;
+my $landscape = 0;
+GetOptions(
+    "e|encoding=s" => \$encoding,
+    "f|font=s"     => \$font,
+    "s|size=s"     => \$size,
+    "l|landscape"  => \$landscape,
+);
+
 my $pdf = PDF::FromHTML->new(
-    encoding    => 'utf-8',
+    encoding => $encoding,
 );
 
 local $SIG{__DIE__} = sub { require Carp; Carp::confess(@_) };
 
-$pdf->load_file(shift || '-');
+my $input_file = @ARGV ? shift : '-';
+my $output_file = @ARGV ? shift : (-t STDOUT and $input_file ne '-') ? "$input_file.pdf" : '-';
+
+$pdf->load_file($input_file);
 $pdf->convert(
-#   Font        => 'traditional',
-#   LineHeight  => 11,
-#   Landscape   => 1,
+    Font        => $font,
+    LineHeight  => $size,
+    Landscape   => $landscape,
 );
-#open X, '>/tmp/x';
-#print X $pdf->twig->sprint;
-#close X;
-$pdf->write_file(shift || '-');
+#warn $pdf->twig->sprint;
+$pdf->write_file($output_file);
 
 1;
 
@@ -41,7 +70,7 @@ Audrey Tang E<lt>cpan@audreyt.orgE<gt>
 
 =head1 COPYRIGHT
 
-Copyright 2004, 2005, 2006, 2007 by Audrey Tang E<lt>cpan@audreyt.orgE<gt>.
+Copyright 2004-2008 by Audrey Tang E<lt>cpan@audreyt.orgE<gt>.
 
 This software is released under the MIT license cited below.
 

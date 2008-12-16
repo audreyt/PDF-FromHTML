@@ -1,5 +1,5 @@
 package PDF::FromHTML;
-$PDF::FromHTML::VERSION = '0.24';
+$PDF::FromHTML::VERSION = '0.26';
 
 use 5.006;
 use strict;
@@ -49,14 +49,26 @@ PDF::FromHTML - Convert HTML documents to PDF
 =head1 SYNOPSIS
 
     my $pdf = PDF::FromHTML->new( encoding => 'utf-8' );
+
+    # Loading from a file:
     $pdf->load_file('source.html');
+
+    # Or from a scalar reference:
+    # $pdf->load_file(\$input);
+
+    # Perform the actual conversion:
     $pdf->convert(
         # With PDF::API2, font names such as 'traditional' also works
         Font        => 'font.ttf',
         LineHeight  => 10,
         Landscape   => 1,
     );
+
+    # Write to a file:
     $pdf->write_file('target.pdf');
+
+    # Or to a scalar reference:
+    # $pdf->write_file(\$output);
 
 =head1 DESCRIPTION
 
@@ -188,8 +200,14 @@ sub convert {
 
 sub write_file {
     my $self = shift;
+
     local $^W;
-    $self->pdf->write_file(@_);
+    if (@_ and ref($_[0]) eq 'SCALAR') {
+        ${$_[0]} = $self->pdf->get_buffer;
+    }
+    else {
+        $self->pdf->write_file(@_);
+    }
 }
 
 1;
@@ -204,8 +222,8 @@ to get the real size.  Less file I/O means faster processing.
 
 =head1 CAVEATS
 
-Although PDF::FromHTML will work with both HTML and XHTML formats, it
-is not designed to utilise CSS.
+Although B<PDF::FromHTML> will work with both HTML and XHTML formats,
+it is not designed to utilise CSS.
 
 This means any HTML using external or inline CSS for design and
 layout, including but not limited to: images, backgrounds, colours,
@@ -215,8 +233,11 @@ To get an idea of the likely resulting PDF, you may wish to use an
 non-CSS capable browser for testing first.
 
 There is currently no plan to adapt this module to utilise CSS.
+(Patches welcome, though!)
 
 =head1 SEE ALSO
+
+L<html2pdf.pl> is a simple command-line interface to this module.
 
 L<PDF::FromHTML::Twig>, L<PDF::Template>, L<XML::Twig>.
 
@@ -230,7 +251,7 @@ Charleston Software Associates E<lt>info@charletonsw.comE<gt>
 
 =head1 COPYRIGHT
 
-Copyright 2004, 2005, 2006, 2007 by Audrey Tang E<lt>cpan@audreyt.orgE<gt>.
+Copyright 2004-2008 by Audrey Tang E<lt>cpan@audreyt.orgE<gt>.
 
 This software is released under the MIT license cited below.
 

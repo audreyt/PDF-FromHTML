@@ -597,7 +597,7 @@ Audrey Tang E<lt>cpan@audreyt.orgE<gt>
 
 =head1 COPYRIGHT
 
-Copyright 2004, 2005, 2006, 2007 by Audrey Tang E<lt>cpan@audreyt.orgE<gt>.
+Copyright 2004-2008 by Audrey Tang E<lt>cpan@audreyt.orgE<gt>.
 
 This software is released under the MIT license cited below.
 
