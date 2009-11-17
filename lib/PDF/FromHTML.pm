@@ -1,9 +1,10 @@
 package PDF::FromHTML;
-$PDF::FromHTML::VERSION = '0.26';
 
 use 5.006;
 use strict;
 use warnings;
+
+our $VERSION = '0.30';
 
 BEGIN {
     foreach my $method ( qw( pdf twig tidy args ) ) {
@@ -241,38 +242,21 @@ L<html2pdf.pl> is a simple command-line interface to this module.
 
 L<PDF::FromHTML::Twig>, L<PDF::Template>, L<XML::Twig>.
 
-=head1 AUTHORS
-
-Audrey Tang E<lt>cpan@audreyt.orgE<gt>
-
 =head1 CONTRIBUTORS
 
 Charleston Software Associates E<lt>info@charletonsw.comE<gt>
 
-=head1 COPYRIGHT
+=head1 AUTHORS
 
-Copyright 2004-2008 by Audrey Tang E<lt>cpan@audreyt.orgE<gt>.
+唐鳳 E<lt>cpan@audreyt.orgE<gt>
 
-This software is released under the MIT license cited below.
+=head1 CC0 1.0 Universal
 
-=head2 The "MIT" License
+To the extent possible under law, 唐鳳 has waived all copyright and related
+or neighboring rights to PDF-FromHTML.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+This work is published from Taiwan.
 
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-DEALINGS IN THE SOFTWARE.
+L<http://creativecommons.org/publicdomain/zero/1.0>
 
 =cut

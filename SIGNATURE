@@ -1,5 +1,5 @@
 This file contains message digests of all files listed in MANIFEST,
-signed via the Module::Signature module, version 0.55.
+signed via the Module::Signature module, version 0.60.
 
 To verify the content in this distribution, first make sure you have
 Module::Signature installed, then type:
@@ -14,23 +14,12 @@ not run its Makefile.PL or Build.PL.
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-SHA1 3d5a5fb42ac70cd6b7620a76d0f8cb1ec0168b26 Changes
-SHA1 54396477e698d80ee7054e28194628cd2fae3c89 MANIFEST
-SHA1 9ec9118de4be6571cb1d75add66c169a85eb7476 META.yml
-SHA1 8124ee41c173886d167f43a4d2c5641dc5280f60 Makefile.PL
-SHA1 4e58afb68b74e2ebae318b557dc1db95889fbe5d README
-SHA1 603bb9de29fb8cba7f13409c546750972eff645d inc/Module/AutoInstall.pm
-SHA1 5c9e093b0facca46d50e3c69d5569aa7a98db0b8 inc/Module/Install.pm
-SHA1 866c0e03f2c87659bb47cb5d0aa37e978b0f2ab3 inc/Module/Install/AutoInstall.pm
-SHA1 465acb50b9006ce61f58a7bd02d0bb029ddceaa6 inc/Module/Install/Base.pm
-SHA1 8356d82167fc00550b4a3ceea8bd852a374d7509 inc/Module/Install/Can.pm
-SHA1 b47ce07fa6d6e38e3daa6cfc752b23f59a64754c inc/Module/Install/Fetch.pm
-SHA1 3863d11bd88e40811755e20e680795ad2be974c8 inc/Module/Install/Include.pm
-SHA1 37ed4ccd7aba10119e6f2993b8082674ce2e5961 inc/Module/Install/Makefile.pm
-SHA1 4aa1c578faad51f31e62bed7b28d3d42b88219c3 inc/Module/Install/Metadata.pm
-SHA1 d7529d795a1304c88253b26a9089913edf31ae5e inc/Module/Install/Win32.pm
-SHA1 2a74aba5a78e7ab2776382e42106ebe941c2ac28 inc/Module/Install/WriteAll.pm
-SHA1 8ee03c84664ca24122bcf4b5b15c31af12655a5e lib/PDF/FromHTML.pm
+SHA1 63c57725ea4f15aea4a232c1abf99e7d72df1a97 Changes
+SHA1 c2a358ce1b582090c33204ef356c642d28b2ee40 MANIFEST
+SHA1 1d88c0b2adb216a17ebec3e72081144a2567e07a META.yml
+SHA1 045a34618c8a00bd8cca02ff22a29a149a87257b Makefile.PL
+SHA1 dc85c9e28eaf039747516ab5d680a92798ebac36 README
+SHA1 970032a86b7cb6e73862d2e9563f645b2c263487 lib/PDF/FromHTML.pm
 SHA1 2f9e0c31d4bbe3ef1ff50a29e843e68b6b9738f0 lib/PDF/FromHTML/Template.pm
 SHA1 02baf18dc18a119dcc625837f1b645c62b12af59 lib/PDF/FromHTML/Template/Base.pm
 SHA1 50cdf2f13a87ec85cb89bcb2ddeb1d358f909c31 lib/PDF/FromHTML/Template/Constants.pm
@@ -61,13 +50,13 @@ SHA1 1911ca83963e864fcee30c62e0fd31b8f2632327 lib/PDF/FromHTML/Template/Element/
 SHA1 a5b890a90482d38ccbb3d443fbe52e3c3f92566f lib/PDF/FromHTML/Template/Factory.pm
 SHA1 900820c0caeb25227242b526f346c1a3608bcf76 lib/PDF/FromHTML/Template/Iterator.pm
 SHA1 82a43e255d8b37bc6b834f912bf83be00c6bf79a lib/PDF/FromHTML/Template/TextObject.pm
-SHA1 8e5dab4558ad37d143aaac3488c76c16b3287ef1 lib/PDF/FromHTML/Twig.pm
+SHA1 04d6e80095e5e03f4086ff5bfd789b1c8e1b7f4a lib/PDF/FromHTML/Twig.pm
 SHA1 3dcc13b5ef03abd8a3f99895e1d6693014eea138 script/html2pdf.pl
 SHA1 dba925c9cd7d09347a17d66d4d9d3bd8215456ec t/1-basic.t
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.3 (Darwin)
+Version: GnuPG v1.4.10 (Darwin)
 
-iD8DBQFJR7mNtLPdNzw1AaARAnP5AJ0dbotqcrE9lBfYotAuc7k28mmtlgCgu+1m
-CGrgKEL/Qe4PzpVenZftxVU=
-=CHJn
+iEYEARECAAYFAksCoeEACgkQtLPdNzw1AaBZ1QCgp7s40ht8h3Pof2c16LurNpcb
+1M8Ani0iuIbEGUD68umzMW8+rnPmDBrh
+=VUC1
 -----END PGP SIGNATURE-----

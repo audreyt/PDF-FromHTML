@@ -1,3 +1,13 @@
+[Changes for 0.30 - 2009年11月17日 周二 16時46分49秒 CST]
+
+* LICENSING CHANGE: This compilation and all individual files in it
+  are now under the nullary CC0 1.0 Universal terms:
+
+  To the extent possible under law, 唐鳳 has waived all copyright and
+  related or neighboring rights to PDF-FromHTML.
+
+* Updated Module::Install to 0.91, prompted by Florian Ragwitz.
+
 [Changes for 0.25 - 2009-01-01]
 
 * Added -l, -e, -f and -s flags to html2pdf.pl; see its POD for details.

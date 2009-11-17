@@ -3,8 +3,9 @@
 use inc::Module::Install;
 
 name		'PDF-FromHTML';
-license         'MIT';
+license         'CC0';
 all_from        'lib/PDF/FromHTML.pm';
+readme_from     'lib/PDF/FromHTML.pm';
 install_script  'script/html2pdf.pl';
 
 requires qw(
@@ -43,5 +44,6 @@ unless (can_use('HTML::Tidy') or can_use('XML::Clean')) {
 .
 }
 
-auto_install();
-WriteAll( sign => 1 );
+auto_install;
+auto_provides;
+sign; WriteAll;

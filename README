@@ -1,42 +1,87 @@
-This is the README file for PDF::FromHTML, a module for converting
-HTML into PDF.
+NAME
+    PDF::FromHTML - Convert HTML documents to PDF
 
-Please type "perldoc PDF::FromHTML" after installation to see
-the module usage information.
+SYNOPSIS
+        my $pdf = PDF::FromHTML->new( encoding => 'utf-8' );
 
-* Installation
+        # Loading from a file:
+        $pdf->load_file('source.html');
 
-PDF::FromHTML uses the standard perl module install process:
+        # Or from a scalar reference:
+        # $pdf->load_file(\$input);
 
-    cpansign -v         # optional; see SIGNATURE for details
-    perl Makefile.PL
-    make                # or 'nmake' on Win32
-    make test
-    make install
+        # Perform the actual conversion:
+        $pdf->convert(
+            # With PDF::API2, font names such as 'traditional' also works
+            Font        => 'font.ttf',
+            LineHeight  => 10,
+            Landscape   => 1,
+        );
 
-* Copyright
+        # Write to a file:
+        $pdf->write_file('target.pdf');
 
-Copyright 2004-2008 by Audrey Tang <cpan@audreyt.org>.
+        # Or to a scalar reference:
+        # $pdf->write_file(\$output);
 
-This software is released under the MIT license cited below.
+DESCRIPTION
+    This module transforms HTML into PDF, using an assortment of XML
+    transformations implemented in PDF::FromHTML::Twig.
 
-* The "MIT" License
+    There is also a command-line utility, html2pdf.pl, that comes with this
+    distribution.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+PUBLIC METHODS
+  convert(%params)
+    Convert the loaded file to PDF. Valid parameters are:
 
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
+        PageWidth         640
+        PageResolution    540
+        FontBold          'HelveticaBold'
+        FontOblique       'HelveticaOblique'
+        FontBoldOblique   'HelveticaBoldOblique'
+        LineHeight        12
+        FontUnicode       'Helvetica'
+        Font              (same as FontUnicode)
+        PageSize          'A4'
+        Landscape         0
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-DEALINGS IN THE SOFTWARE.
+HINTS & TIPS
+  <img> tags
+    Add the height and width attributes if you are creating the source HTML,
+    it keeps PDF::FromHTML from having to open and read the source image
+    file to get the real size. Less file I/O means faster processing.
+
+CAVEATS
+    Although PDF::FromHTML will work with both HTML and XHTML formats, it is
+    not designed to utilise CSS.
+
+    This means any HTML using external or inline CSS for design and layout,
+    including but not limited to: images, backgrounds, colours, fonts etc...
+    will not be converted into the PDF.
+
+    To get an idea of the likely resulting PDF, you may wish to use an
+    non-CSS capable browser for testing first.
+
+    There is currently no plan to adapt this module to utilise CSS. (Patches
+    welcome, though!)
+
+SEE ALSO
+    html2pdf.pl is a simple command-line interface to this module.
+
+    PDF::FromHTML::Twig, PDF::Template, XML::Twig.
+
+CONTRIBUTORS
+    Charleston Software Associates <info@charletonsw.com>
+
+AUTHORS
+    唐鳳 <cpan@audreyt.org>
+
+CC0 1.0 Universal
+    To the extent possible under law, 唐鳳 has waived all copyright and
+    related or neighboring rights to PDF-FromHTML.
+
+    This work is published from Taiwan.
+
+    <http://creativecommons.org/publicdomain/zero/1.0>
 
