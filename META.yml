@@ -9,7 +9,7 @@ configure_requires:
 distribution_type: module
 dynamic_config: 1
 generated_by: 'Module::Install version 1.19'
-license: cc0
+license: unrestricted
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
   version: 1.4
@@ -21,10 +21,10 @@ no_index:
 provides:
   PDF::FromHTML:
     file: lib/PDF/FromHTML.pm
-    version: '0.32'
+    version: '0.33'
   PDF::FromHTML::Template:
     file: lib/PDF/FromHTML/Template.pm
-    version: '0.32'
+    version: '0.33'
   PDF::FromHTML::Template::Base:
     file: lib/PDF/FromHTML/Template/Base.pm
   PDF::FromHTML::Template::Constants:
@@ -95,4 +95,4 @@ requires:
   PDF::Writer: '0.05'
   XML::Twig: 0
   perl: 5.6.0
-version: '0.32'
+version: '0.33'
