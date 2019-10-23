@@ -5,7 +5,6 @@ use inc::Module::Install;
 name		'PDF-FromHTML';
 license         'CC0';
 all_from        'lib/PDF/FromHTML.pm';
-readme_from     'lib/PDF/FromHTML.pm';
 install_script  'script/html2pdf.pl';
 
 requires qw(
