@@ -4,7 +4,7 @@ use 5.006;
 use strict;
 use warnings;
 
-our $VERSION = '0.31';
+our $VERSION = '0.32';
 
 BEGIN {
     foreach my $method ( qw( pdf twig tidy args ) ) {
